@@ -1,6 +1,7 @@
 #coding:utf-8
 
-import ui
+from ui import Ui_lunch
 
 if __name__ == '__main__':
     print("Welcom to OPPO Cam Analyzer")
+    Ui_lunch()
