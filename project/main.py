@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from ui import Ui_lunch
+from Startup_file import ui_lunch
+
+import image_classify as ic
 from util import *
 
-project = "19537"
+
+
+
 
 if __name__ == '__main__':
-    print("Welcom to OPPO Auto test system")
-    #Ui_lunch()
-    make_default_folder(project)
-    export_files(project)
+
+    ui_lunch()
+    #ic.classify()
+
+

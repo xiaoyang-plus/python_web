@@ -9,8 +9,23 @@
 import os
 
 # 测试图卡对应的文件夹
-FOLDERS_LIST = ["24色卡", "灰卡", "DNP", "ISO12233 chart", "西门子星图", "点阵图", "枯叶图", "OECF", "跑马灯视频", "工频干扰视频"]
+FOLDERS_LIST = ["colorChecker", "TE255", "tvLine", "siemensStar", "DOT", "deadLeaf", "OECF", "scrollLamp", "powerLine"]
 
+def make_folder(parent_directory):
+    """make folder store classify chart.
+
+    make FOLDERS_LIST folder in parent_directory.
+
+    Args：
+        parent_directory: parent directory.
+
+    """
+
+    for folder in FOLDERS_LIST:
+        path = parent_directory + '\\' + folder
+        os.makedirs(path)
+
+    return True
 
 def make_default_folder(project):
     """make folders.
@@ -47,3 +62,10 @@ def export_files(project):
     command = "adb pull sdcard/DCIM/Camera " + path
     os.system(command)
     print("文件导出完成")
+
+def get_source_path():
+    """get source path
+
+    :return: SOURCE_PATH
+    """
+    return SOURCE_PATH
