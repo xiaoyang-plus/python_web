@@ -10,8 +10,9 @@ import os
 
 # 测试图卡对应的文件夹
 FOLDERS_LIST = ["colorChecker", "TE255", "tvLine", "siemensStar", "DOT", "deadLeaf", "OECF", "scrollLamp", "powerLine"]
+SOURCE_PATH = ''
 
-def make_folder(parent_directory):
+def make_folder(target_dir):
     """make folder store classify chart.
 
     make FOLDERS_LIST folder in parent_directory.
@@ -20,10 +21,13 @@ def make_folder(parent_directory):
         parent_directory: parent directory.
 
     """
+    print('Enter', make_folder.__name__)
 
     for folder in FOLDERS_LIST:
-        path = parent_directory + '\\' + folder
+        path = os.path.join(target_dir, folder)
+        thumb_path = os.path.join(path,'.thumb')
         os.makedirs(path)
+        os.makedirs(thumb_path)
 
     return True
 
@@ -62,10 +66,3 @@ def export_files(project):
     command = "adb pull sdcard/DCIM/Camera " + path
     os.system(command)
     print("文件导出完成")
-
-def get_source_path():
-    """get source path
-
-    :return: SOURCE_PATH
-    """
-    return SOURCE_PATH
