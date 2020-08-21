@@ -1,36 +1,35 @@
 # -*- coding: utf-8 -*-
 
-import os
 """
 @author Jacky
-@desc test demo
-@date 2020/08/05
+@desc image calculate module
+@date 2020/08/21
 """
 
-import cv2 as cv
-import numpy as np
 import math
-from analyze import ObjectiveAnalyzer
+import numpy as np
+import cv2 as cv
 
-source = "D:\\桌面\\video\\VID20200101173144.mp4"
-dst = "D:\\1\\"
+def calculate_defect(image):
+    """
 
-
-def detect_defect():
-    image_path = "D:\\test data\\defect.jpg"
-    image = cv.imread(image_path, cv.IMREAD_COLOR)
+    :param image:  input rgb image
+    :return: defect data list [total defects, defects num]
+    """
+    # image_path = "D:\\test data\\defect.jpg"
+    # image = cv.imread(image_path, cv.IMREAD_COLOR)
     image_gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)  # np.ndarray BGR uint8
 
     screen_threshold = 0.2  # preliminarily screen for calculating
     standard_threshold = 0.3  # defect standard ratio
 
     min_val, max_val, min_idx, max_idx = cv.minMaxLoc(image_gray)
-    print(min_val, max_val, min_idx, max_idx)
+    # print(min_val, max_val, min_idx, max_idx)
     mean, std = cv.meanStdDev(image)
-    print(mean[0], std[0])
+    # print(mean[0], std[0])
     upper_limit = mean[0] + mean[0] * screen_threshold
     lower_limit = mean[0] - mean[0] * screen_threshold
-    print(upper_limit, lower_limit)
+    # print(upper_limit, lower_limit)
 
     window = 16  # standard window
     #  make border for  fast calculating
@@ -43,7 +42,7 @@ def detect_defect():
     for row in range(image_defect.shape[0]):
         for col in range(image_defect.shape[1]):
             if image_defect[row, col]:
-                mean, std = cv.meanStdDev(image_border[row:row+window*2, col:col+window*2])
+                mean, std = cv.meanStdDev(image_border[row:row + window * 2, col:col + window * 2])
                 standard_limit = [mean[0] - mean[0] * standard_threshold, mean[0] + mean[0] * standard_threshold]
                 if image_gray[row, col] < standard_limit[0]:
                     black += 1
@@ -54,7 +53,7 @@ def detect_defect():
 
     contours, hierarchy = cv.findContours(result, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     cv.drawContours(image, contours, -1, (0, 0, 255), 2)
-    cv.imwrite("D:\\test data\\result1.jpg", image)
+    # cv.imwrite("D:\\test data\\result1.jpg", image)
 
     defects = 0
     for cnt in contours:
@@ -63,22 +62,6 @@ def detect_defect():
             defects += 1
 
     print('hot:', hot, 'black:', black, 'defects:', defects)
+    total_defect = hot + black
 
-if __name__ == '__main__':
-    # cnt = 1
-    # cap = cv.VideoCapture(source)
-    # while cap.isOpened():
-    #     ret, frame = cap.read()
-    #     # if frame is read correctly ret is True
-    #     if not ret:
-    #         print("Can't receive frame (stream end?). Exiting ...")
-    #         break
-    #
-    #     saved_file = dst + str(cnt) + ".jpg"
-    #     cnt = cnt + 1
-    #     cv.imwrite(saved_file, frame)
-
-    detect_defect()
-
-    #resize pic
-
+    return [total_defect, defects]

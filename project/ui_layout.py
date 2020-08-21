@@ -15,7 +15,7 @@ from os.path import isfile, join
 
 from manager import manage_image
 from manager import analyze_image
-from util import FOLDERS_LIST
+from common import FOLDERS_LIST
 import source_rc
 
 SCREEN_WEIGHT = 1920
@@ -33,7 +33,7 @@ class Ui_zhu(object):
 
     def setupUi(self, zhu):
         zhu.setObjectName("zhu")
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.Tool)  # 去掉标题栏
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)  # 去掉标题栏
         self.stackedWidget = QtWidgets.QStackedWidget(zhu)
 
         self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 1200, 701))
