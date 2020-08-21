@@ -10,6 +10,7 @@ import os
 
 # 测试图卡对应的文件夹
 FOLDERS_LIST = ["colorChecker", "TE255", "tvLine", "siemensStar", "DOT", "deadLeaf", "OECF", "scrollLamp", "powerLine"]
+
 SOURCE_PATH = ''
 
 def make_folder(target_dir):

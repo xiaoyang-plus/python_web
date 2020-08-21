@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import time
+from sys import exit
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -103,7 +103,7 @@ class Ui_zhu(object):
                                        "QRadioButton::indicator:checked{color: rgb(85, 255, 255);}\n"
                                        "")
         self.radioButton.setObjectName("radioButton")
-        #self.radioButton.QRadioButton('前置')
+        # self.radioButton.QRadioButton('前置')
 
         self.radioButton_2 = QtWidgets.QRadioButton(self.souye)
         self.radioButton_2.setGeometry(QtCore.QRect(600, 590, 71, 21))
@@ -113,7 +113,7 @@ class Ui_zhu(object):
                                          "QRadioButton::indicator:checked{color: rgb(85, 255, 255);}\n"
                                          "")
         self.radioButton_2.setObjectName("radioButton_2")
-        #self.radioButton.QRadioButton('后置')
+        # self.radioButton.QRadioButton('后置')
 
         self.stackedWidget.addWidget(self.souye)
         self.xiangxi = QtWidgets.QWidget()
@@ -1182,6 +1182,24 @@ class Ui_zhu(object):
         self.pushButton_XSQP.clicked.connect(self.on_pushButton0_clicked)
         self.pushButton_QTQP.clicked.connect(self.on_pushButton0_clicked)
 
+    def get_hboxlayout(self):
+        """get dict of chart:QHBoxLayout
+        for thumb show and clear function
+
+        :return:  dict{chart:QHBoxLayout}
+        """
+        h_box_layout = {'colorChecker': self.horizontalLayout,
+                        'TE255': self.horizontalLayout_10,
+                        'tvLine': self.horizontalLayout_8,
+                        'siemensStar': self.horizontalLayout_6,
+                        'DOT': self.horizontalLayout_12,
+                        'deadLeaf': self.horizontalLayout_13,
+                        'OECF': self.horizontalLayout_7,
+                        'scrollLamp': self.horizontalLayout_9,
+                        'powerLine': self.horizontalLayout_11
+                        }
+
+        return h_box_layout
 
     def on_pushButton1_clicked(self):
 
@@ -1214,68 +1232,75 @@ class Ui_zhu(object):
         self.show_thumb()
 
     def show_thumb(self):
-        layout = {'colorChecker': self.horizontalLayout,
-                  'TE255': self.horizontalLayout_10,
-                  'tvLine': self.horizontalLayout_8,
-                  'siemensStar': self.horizontalLayout_6,
-                  'DOT': self.horizontalLayout_12,
-                  'deadLeaf': self.horizontalLayout_13,
-                  'OECF': self.horizontalLayout_7,
-                  'scrollLamp': self.horizontalLayout_9,
-                  'powerLine': self.horizontalLayout_11
-                  }
+        """show thumb
 
-        for item in FOLDERS_LIST:
+        :return:
+        """
+
+        h_layout = self.get_hboxlayout()
+        for chart in FOLDERS_LIST:
             label = {}
-            path = os.path.join(self.source_dir, item, '.thumb')
+            path = os.path.join(self.source_dir, chart, '.thumb')
             imag_list = [f for f in listdir(path) if isfile(join(path, f))]
 
             for i, j in enumerate(imag_list):  # ：对于i,j在枚举  OK里面
+                print(i, j)
                 label[i] = QLabel(str(i))  # label i = 标签 1
                 label[i].setFixedSize(90, 68)  # label i 大小为100；100
-                layout[item].addWidget(label[i])  # layout：布局：添加label i
+                h_layout[chart].addWidget(label[i])  # layout：布局：添加label i
                 image = QtGui.QPixmap(os.path.join(path, j)).scaled(label[i].width(), label[i].height())
                 label[i].setPixmap(image)  # label i设置象素映射 pix 图像
+
+    def clear_thumb(self):
+        """clear thumb
+        clear thumb show UI when back to main UI
+
+        :return:
+        """
+        h_layout = self.get_hboxlayout()
+        for chart in FOLDERS_LIST:
+            for idx in range(h_layout[chart].count()):
+                item = h_layout[chart].itemAt(0)
+                h_layout[chart].removeItem(item)
 
 
     def on_pushButton2_clicked(self):
         self.stackedWidget.setCurrentIndex(2)
         # 按钮三：打开第三个面板
         # start do objective analyze
-        analyze_image(self.camera, self.source_dir)
+        self.do_analyze()
 
+    def do_analyze(self):
+        analyze_image(self.camera, self.source_dir)
 
     def on_pushButton3_clicked(self):
         pass
         # self.stackedWidget.setCurrentIndex(3)
 
-
     def on_pushButton0_clicked(self):
         self.stackedWidget.setCurrentIndex(0)
+        self.clear_thumb()
 
     def aa_pushButton_ZXH(self):
-            """
+        """
             最小化窗口
             """
-            self.showMinimized()
+        self.showMinimized()
 
     def mousePressEvent(self, event):
-            if event.button() == Qt.LeftButton:
-                    self.m_flag = True
-                    self.m_Position = event.globalPos() - self.pos()  # 获取鼠标相对窗口的位置
-                    event.accept()
+        if event.button() == Qt.LeftButton:
+            self.m_flag = True
+            self.m_Position = event.globalPos() - self.pos()  # 获取鼠标相对窗口的位置
+            event.accept()
 
     def mouseMoveEvent(self, QMouseEvent):
-            if Qt.LeftButton and self.m_flag:
-                    self.move(QMouseEvent.globalPos() - self.m_Position)  # 更改窗口位置
-                    QMouseEvent.accept()
+        if Qt.LeftButton and self.m_flag:
+            self.move(QMouseEvent.globalPos() - self.m_Position)  # 更改窗口位置
+            QMouseEvent.accept()
 
     def mouseReleaseEvent(self, QMouseEvent):
-            self.m_flag = False
-            self.setCursor(QCursor(Qt.ArrowCursor))
+        self.m_flag = False
+        self.setCursor(QCursor(Qt.ArrowCursor))
 
     def aa_pushButton_SYGB(self):
-            exit(0)
-
-
-
+        exit(0)

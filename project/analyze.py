@@ -56,7 +56,7 @@ class ObjectiveAnalyzer():
             blemish_num: the amount of blemishs
             max_blemish: pixels of max blemish
         """
-
+        return
         image = imread("D:\\test data\\defect.jpg")
         data = icm.calculate_defect(image)
         print(data)
