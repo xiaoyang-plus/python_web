@@ -31,6 +31,8 @@ def manage_image(file_list):
     ml_classify.classify_image(file_list)
     print('Image manage done!')
 
+    return True
+
 
 def analyze_image(camera, source_dir):
     """
@@ -43,7 +45,7 @@ def analyze_image(camera, source_dir):
 
     objective_analyzer = ObjectiveAnalyzer(camera, source_dir)
     objective_analyzer.generate_report()
-    objective_analyzer.defects_detect()
+    # objective_analyzer.defects_detect()
     objective_analyzer.save_report()
 
 

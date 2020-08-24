@@ -16,6 +16,8 @@ from os.path import isfile, join
 from manager import manage_image
 from manager import analyze_image
 from common import FOLDERS_LIST
+from my_label import MyLabel
+
 import source_rc
 
 SCREEN_WEIGHT = 1920
@@ -435,6 +437,7 @@ class Ui_zhu(object):
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 18092, 72))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout.setObjectName('colorChecker')
         self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(1)
@@ -702,6 +705,7 @@ class Ui_zhu(object):
         self.horizontalLayoutWidget_10.setGeometry(QtCore.QRect(0, 0, 2732, 70))
         self.horizontalLayoutWidget_10.setObjectName("horizontalLayoutWidget_10")
         self.horizontalLayout_10 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_10)
+        self.horizontalLayout_10.setObjectName('TE255')
         self.horizontalLayout_10.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_10.setObjectName("horizontalLayout_10")
         self.horizontalLayout_10.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
@@ -1202,6 +1206,11 @@ class Ui_zhu(object):
         return h_box_layout
 
     def on_pushButton1_clicked(self):
+        """GO button
+        pop file dialog after camera be chosed
+
+        :return:
+        """
 
         # ensure camera be selected
         if self.radioButton.isChecked():
@@ -1212,23 +1221,19 @@ class Ui_zhu(object):
             QMessageBox.information(self, "警告提示", "请选择摄像头", QMessageBox.Yes)
             return
 
-        # show thumb list ui
-        self.stackedWidget.setCurrentIndex(1)
-
         # load image
         root = Tk()
         root.withdraw()
         self.file_list = askopenfilenames()
 
-        # if no file selected return to main ui
         if not self.file_list:
-            self.stackedWidget.setCurrentIndex(0)
             return
 
-        # make folder and classify
-        manage_image(self.file_list)
+        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.repaint()  # repaint immediately
+
         self.source_dir = os.path.dirname(self.file_list[0])
-        # show thumb on thumb list ui
+        manage_image(self.file_list)
         self.show_thumb()
 
     def show_thumb(self):
@@ -1244,8 +1249,10 @@ class Ui_zhu(object):
             imag_list = [f for f in listdir(path) if isfile(join(path, f))]
 
             for i, j in enumerate(imag_list):  # ：对于i,j在枚举  OK里面
-                print(i, j)
-                label[i] = QLabel(str(i))  # label i = 标签 1
+                label[i] = QLabel(j)  # label i = 标签 1
+                # label[i] = MyLabel()
+                label[i].setObjectName(j)
+                # label[i].setParent(self.scrollArea_gd)
                 label[i].setFixedSize(90, 68)  # label i 大小为100；100
                 h_layout[chart].addWidget(label[i])  # layout：布局：添加label i
                 image = QtGui.QPixmap(os.path.join(path, j)).scaled(label[i].width(), label[i].height())
@@ -1265,13 +1272,15 @@ class Ui_zhu(object):
 
 
     def on_pushButton2_clicked(self):
-        self.stackedWidget.setCurrentIndex(2)
-        # 按钮三：打开第三个面板
-        # start do objective analyze
-        self.do_analyze()
+        """start to do analyzer button
 
-    def do_analyze(self):
+        :return:
+        """
+        # change ui to show analyzing  stats
+        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.repaint()  # repaint immediately
         analyze_image(self.camera, self.source_dir)
+
 
     def on_pushButton3_clicked(self):
         pass
