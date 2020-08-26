@@ -7,11 +7,12 @@
 """
 
 import os
+import shutil
+import gloabl_var as gl
 
-# 测试图卡对应的文件夹
-FOLDERS_LIST = ["colorChecker", "TE255", "tvLine", "siemensStar", "DOT", "deadLeaf", "OECF", "scrollLamp", "powerLine"]
 
 SOURCE_PATH = ''
+
 
 def make_folder(target_dir):
     """make folder store classify chart.
@@ -23,14 +24,17 @@ def make_folder(target_dir):
 
     """
     print('Enter', make_folder.__name__)
+    global SOURCE_PATH
+    SOURCE_PATH = target_dir
 
-    for folder in FOLDERS_LIST:
+    for folder in gl.get_value('folder_list'):
         path = os.path.join(target_dir, folder)
-        thumb_path = os.path.join(path,'.thumb')
+        thumb_path = os.path.join(path, '.thumb')
         os.makedirs(path)
         os.makedirs(thumb_path)
 
     return True
+
 
 def make_default_folder(project):
     """make folders.
@@ -46,11 +50,12 @@ def make_default_folder(project):
         print("目录已存在")
         return False
 
-    for folder in FOLDERS_LIST:
+    for folder in gl.get_value('folder_list'):
         path = curr_path + folder
         os.makedirs(path)
 
     return True
+
 
 def export_files(project):
     """export files.
@@ -67,3 +72,32 @@ def export_files(project):
     command = "adb pull sdcard/DCIM/Camera " + path
     os.system(command)
     print("文件导出完成")
+
+
+def move_file(path_list):
+    """
+
+    :param path_list: [dst dir, source dir, file name]
+    :return:
+    """
+    print('Enter', move_file.__name__)
+
+    # global SOURCE_PATH
+
+    # move base file
+    dst_dir = os.path.join(SOURCE_PATH, path_list[0])
+    file = os.path.join(SOURCE_PATH, path_list[1], path_list[2])
+    try:
+        shutil.move(file, dst_dir)
+    except shutil.Error:
+        return
+
+
+    # move thumb file
+    thumb_dir = os.path.join(dst_dir, '.thumb')
+    thumb_filename = os.path.join(SOURCE_PATH, path_list[1], '.thumb', path_list[2])
+    shutil.move(thumb_filename, thumb_dir)
+
+    win = gl.get_value('win')
+    win.update_thumb(path_list[0:2])
+

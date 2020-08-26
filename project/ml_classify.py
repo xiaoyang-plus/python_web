@@ -14,7 +14,6 @@
 import os
 import shutil
 import cv2 as cv
-
 import classify_util as ft
 
 

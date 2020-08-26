@@ -7,11 +7,8 @@
 """
 
 import os
-import shutil
-import sys
 import openpyxl
-
-REPORT_NAME = "OPPO手机照相效果客观测试报告.xlsx"
+import gloabl_var as gl
 
 
 class ReportUtil(object):
@@ -32,8 +29,9 @@ class ReportUtil(object):
         """
         print('Enter', ReportUtil.__name__, 'generate_report')
 
-        self.__report_demo_path = os.path.join('report', REPORT_NAME)
-        self.__report_save_path = os.path.join(target_dir, REPORT_NAME)
+        report = gl.get_value('report_name')
+        self.__report_demo_path = os.path.join('report', report)
+        self.__report_save_path = os.path.join(target_dir, report)
 
         print('generate report done!')
 

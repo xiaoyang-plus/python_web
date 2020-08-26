@@ -3,8 +3,6 @@
 import os
 from sys import exit
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
 from PyQt5.QtGui import QCursor
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt
@@ -13,9 +11,10 @@ from tkinter.filedialog import askopenfilenames
 from os import listdir
 from os.path import isfile, join
 
+
 from manager import manage_image
 from manager import analyze_image
-from common import FOLDERS_LIST
+import gloabl_var as gl
 from my_label import MyLabel
 
 import source_rc
@@ -117,6 +116,9 @@ class Ui_zhu(object):
         self.radioButton_2.setObjectName("radioButton_2")
         # self.radioButton.QRadioButton('后置')
 
+        '''
+        第二页
+        '''
         self.stackedWidget.addWidget(self.souye)
         self.xiangxi = QtWidgets.QWidget()
         self.xiangxi.setObjectName("xiangxi")
@@ -178,33 +180,34 @@ class Ui_zhu(object):
         self.label_24SKBJ.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
         self.label_24SKBJ.setText("")
         self.label_24SKBJ.setObjectName("label_24SKBJ")
-        self.label_24SKBQ = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        # self.label_24SKBQ = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.label_24SKBQ = MyLabel(self.scrollAreaWidgetContents)
         self.label_24SKBQ.setGeometry(QtCore.QRect(25, 30, 71, 51))
         self.label_24SKBQ.setStyleSheet("border-image: url(:/new/prefix1/image/20200728155253.png);")
         self.label_24SKBQ.setText("")
-        self.label_24SKBQ.setObjectName("label_24SKBQ")
+        self.label_24SKBQ.setObjectName("ColorChecker")
         self.label_24SKMC = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.label_24SKMC.setGeometry(QtCore.QRect(30, 90, 71, 16))
         self.label_24SKMC.setStyleSheet("color: rgb(85, 255, 255);\n"
                                         "font: 10pt \"黑体\";")
         self.label_24SKMC.setAlignment(QtCore.Qt.AlignCenter)
         self.label_24SKMC.setObjectName("label_24SKMC")
-        self.label_OECFBQ = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.label_OECFBQ = MyLabel(self.scrollAreaWidgetContents)
         self.label_OECFBQ.setGeometry(QtCore.QRect(30, 150, 71, 51))
         self.label_OECFBQ.setStyleSheet("border-image: url(:/new/prefix1/image/20200728155208.png);")
         self.label_OECFBQ.setText("")
-        self.label_OECFBQ.setObjectName("label_OECFBQ")
+        self.label_OECFBQ.setObjectName("OECF")
         self.label_OECFMC = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.label_OECFMC.setGeometry(QtCore.QRect(30, 210, 71, 16))
         self.label_OECFMC.setStyleSheet("color: rgb(85, 255, 255);\n"
                                         "font: 10pt \"黑体\";")
         self.label_OECFMC.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_OECFMC.setObjectName("label_OECFMC")
-        self.label_OECFBJ = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.label_OECFMC.setObjectName("OECF")
+        self.label_OECFBJ = MyLabel(self.scrollAreaWidgetContents)
         self.label_OECFBJ.setGeometry(QtCore.QRect(0, 120, 1150, 120))
         self.label_OECFBJ.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
         self.label_OECFBJ.setText("")
-        self.label_OECFBJ.setObjectName("label_OECFBJ")
+        self.label_OECFBJ.setObjectName("OECF")
         self.label_XIMENZIBJ = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.label_XIMENZIBJ.setGeometry(QtCore.QRect(0, 240, 1150, 120))
         self.label_XIMENZIBJ.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
@@ -1192,15 +1195,15 @@ class Ui_zhu(object):
 
         :return:  dict{chart:QHBoxLayout}
         """
-        h_box_layout = {'colorChecker': self.horizontalLayout,
+        h_box_layout = {'ColorChecker': self.horizontalLayout,
                         'TE255': self.horizontalLayout_10,
-                        'tvLine': self.horizontalLayout_8,
-                        'siemensStar': self.horizontalLayout_6,
+                        'TVLine': self.horizontalLayout_8,
+                        'SiemensStar': self.horizontalLayout_6,
                         'DOT': self.horizontalLayout_12,
-                        'deadLeaf': self.horizontalLayout_13,
+                        'DeadLeaf': self.horizontalLayout_13,
                         'OECF': self.horizontalLayout_7,
-                        'scrollLamp': self.horizontalLayout_9,
-                        'powerLine': self.horizontalLayout_11
+                        'Scroll': self.horizontalLayout_9,
+                        'Flicker': self.horizontalLayout_11
                         }
 
         return h_box_layout
@@ -1235,28 +1238,27 @@ class Ui_zhu(object):
         self.source_dir = os.path.dirname(self.file_list[0])
         manage_image(self.file_list)
         self.show_thumb()
+        # _thread.start_new_thread(self.update_thumb, ())
 
     def show_thumb(self):
         """show thumb
 
         :return:
         """
-
         h_layout = self.get_hboxlayout()
-        for chart in FOLDERS_LIST:
+        for chart in gl.get_value('folder_list'):
             label = {}
             path = os.path.join(self.source_dir, chart, '.thumb')
             imag_list = [f for f in listdir(path) if isfile(join(path, f))]
 
-            for i, j in enumerate(imag_list):  # ：对于i,j在枚举  OK里面
-                label[i] = QLabel(j)  # label i = 标签 1
-                # label[i] = MyLabel()
-                label[i].setObjectName(j)
-                # label[i].setParent(self.scrollArea_gd)
-                label[i].setFixedSize(90, 68)  # label i 大小为100；100
-                h_layout[chart].addWidget(label[i])  # layout：布局：添加label i
-                image = QtGui.QPixmap(os.path.join(path, j)).scaled(label[i].width(), label[i].height())
-                label[i].setPixmap(image)  # label i设置象素映射 pix 图像
+            for idx, file_name in enumerate(imag_list):  # ：对于i,j在枚举  OK里面
+                label[idx] = MyLabel()
+                object_name = chart + ':' + file_name  # combine chart type and file name
+                label[idx].setObjectName(object_name)
+                label[idx].setFixedSize(90, 68)  # label i 大小为100；100
+                h_layout[chart].addWidget(label[idx])  # layout：布局：添加label i
+                image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
+                label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
 
     def clear_thumb(self):
         """clear thumb
@@ -1265,10 +1267,40 @@ class Ui_zhu(object):
         :return:
         """
         h_layout = self.get_hboxlayout()
-        for chart in FOLDERS_LIST:
+        for chart in gl.get_value('folder_list'):
             for idx in range(h_layout[chart].count()):
                 item = h_layout[chart].itemAt(0)
                 h_layout[chart].removeItem(item)
+
+
+    def update_thumb(self, change_dir):
+        """
+
+        :param dir_list: update dir
+        :return:
+        """
+
+        print('update_thumb', change_dir)
+        if len(change_dir) > 0:
+            h_layout = self.get_hboxlayout()
+            for chart in change_dir:
+                for idx in range(h_layout[chart].count()):
+                    item = h_layout[chart].itemAt(0)
+                    h_layout[chart].removeItem(item)
+
+            for chart in change_dir:
+                label = {}
+                path = os.path.join(self.source_dir, chart, '.thumb')
+                imag_list = [f for f in listdir(path) if isfile(join(path, f))]
+
+                for idx, file_name in enumerate(imag_list):  # ：对于i,j在枚举  OK里面
+                    label[idx] = MyLabel()
+                    object_name = chart + ':' + file_name  # combine chart type and file name
+                    label[idx].setObjectName(object_name)
+                    label[idx].setFixedSize(90, 68)  # label i 大小为100；100  90, 68
+                    h_layout[chart].addWidget(label[idx])  # layout：布局：添加label i
+                    image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
+                    label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
 
 
     def on_pushButton2_clicked(self):
