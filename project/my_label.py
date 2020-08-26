@@ -14,6 +14,7 @@ from common import move_file
 SRC_FILE = []
 DST_DIR = []
 
+
 class MyLabel(QLabel):
     """
 
@@ -36,7 +37,7 @@ class MyLabel(QLabel):
                     self.setStyleSheet("")
                     SRC_FILE.clear()
 
-                if len(self.objectName().split(':')) == 1 and len(SRC_FILE) == 2:  #  dst dir
+                if len(self.objectName().split(':')) == 1 and len(SRC_FILE) == 2:  # dst dir
                     DST_DIR = self.objectName().split(':')
                     # print(self.objectName().split(':'), 'selected:')
                     if DST_DIR[0] == SRC_FILE[0]:

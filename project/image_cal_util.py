@@ -10,11 +10,12 @@ import math
 import numpy as np
 import cv2 as cv
 
+
 def calculate_defect(image):
     """
 
     :param image:  input rgb image
-    :return: defect data list [total defects, defects num]
+    :return: [hintImage, total defects, defects num]
     """
     # image_path = "D:\\test data\\defect.jpg"
     # image = cv.imread(image_path, cv.IMREAD_COLOR)
@@ -29,7 +30,6 @@ def calculate_defect(image):
     # print(mean[0], std[0])
     upper_limit = mean[0] + mean[0] * screen_threshold
     lower_limit = mean[0] - mean[0] * screen_threshold
-    # print(upper_limit, lower_limit)
 
     window = 16  # standard window
     #  make border for  fast calculating
@@ -64,4 +64,4 @@ def calculate_defect(image):
     print('hot:', hot, 'black:', black, 'defects:', defects)
     total_defect = hot + black
 
-    return [total_defect, defects]
+    return [image, total_defect, defects]

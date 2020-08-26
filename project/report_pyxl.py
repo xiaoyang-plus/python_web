@@ -58,9 +58,9 @@ class ReportUtil(object):
     def write_report(self, camera, item, data):
         """
 
-        :param camera:
-        :param item:
-        :param data:
+        :param camera: front or main camera
+        :param item: objective item
+        :param data: {sub_item:data}
         :return:
         """
         print('Enter', ReportUtil.__name__, 'write_report:',

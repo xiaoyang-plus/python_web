@@ -11,7 +11,7 @@ import shutil
 import gloabl_var as gl
 
 
-SOURCE_PATH = ''
+TARGET_DIR = ''
 
 
 def make_folder(target_dir):
@@ -24,8 +24,8 @@ def make_folder(target_dir):
 
     """
     print('Enter', make_folder.__name__)
-    global SOURCE_PATH
-    SOURCE_PATH = target_dir
+    global TARGET_DIR
+    TARGET_DIR = target_dir
 
     for folder in gl.get_value('folder_list'):
         path = os.path.join(target_dir, folder)
@@ -85,19 +85,30 @@ def move_file(path_list):
     # global SOURCE_PATH
 
     # move base file
-    dst_dir = os.path.join(SOURCE_PATH, path_list[0])
-    file = os.path.join(SOURCE_PATH, path_list[1], path_list[2])
+    dst_dir = os.path.join(TARGET_DIR, path_list[0])
+    file = os.path.join(TARGET_DIR, path_list[1], path_list[2])
     try:
         shutil.move(file, dst_dir)
     except shutil.Error:
         return
 
-
     # move thumb file
     thumb_dir = os.path.join(dst_dir, '.thumb')
-    thumb_filename = os.path.join(SOURCE_PATH, path_list[1], '.thumb', path_list[2])
+    thumb_filename = os.path.join(TARGET_DIR, path_list[1], '.thumb', path_list[2])
     shutil.move(thumb_filename, thumb_dir)
 
     win = gl.get_value('win')
     win.update_thumb(path_list[0:2])
+
+def check_dir(path):
+    """
+
+    :param path: dir path
+    :return:
+    """
+
+    pass
+
+
+
 
