@@ -109,6 +109,17 @@ def check_dir(path):
 
     pass
 
+def update_ui():
+    """
 
+    :return:
+    """
+    print('emit update ui')
+    win = gl.get_value('win')
+    # win.on_xuanzhuan_tingzi_1()
+    # win.on_xuanzhuan_tingzi_2()
 
-
+    win.on_xuanzhuan_tingzi_1()
+    win.on_xuanzhuan_tingzi_2()
+    win.show_thumb()
+    # win.show_thumb()

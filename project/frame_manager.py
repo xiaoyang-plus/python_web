@@ -10,7 +10,6 @@ import os
 from common import make_folder
 import ml_classify
 from analyzer_manager import AnalyzerManager
-import gloabl_var as gl
 
 
 def manage_image(file_list):
@@ -31,9 +30,9 @@ def manage_image(file_list):
     # classify image
     ml_classify.classify_image(file_list)
     print('Image manage done!')
+    # gl.get_value('win').show_thumb()
 
-    exit()
-    # return True
+    return True
 
 
 def analyze_image(camera, source_dir):

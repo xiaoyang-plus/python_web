@@ -3,21 +3,18 @@
 import time
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtGui import  QCursor
+from PyQt5.QtGui import QCursor
 from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QSize, QObject
+from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QSize
 import os
 from tkinter import Tk
 from tkinter.filedialog import askopenfilenames
 from os import listdir
 from os.path import isfile, join
-import threading
 
-from my_label import MyLabel
-import frame_manager as fm
 import gloabl_var as gl
-
-
+from my_label import MyLabel
+from classify_thread import ClassifyThread
 import source_rc
 
 
@@ -27,6 +24,8 @@ class Ui_zhu(object):
         self.camera = ''
         self.source_dir = ''
         self.file_list = ''
+        self.classify_thread = ClassifyThread()
+        self.classify_thread.finish_sig.connect(self.classify_finish)
 
     def setupUi(self, zhu):
         zhu.setObjectName("zhu")
@@ -1730,7 +1729,6 @@ class Ui_zhu(object):
         self.pushButton_linshi_3.setText(_translate("zhu", "PushButton"))
         self.label_QTYBJ.setText(_translate("zhu", "TextLabel"))
 
-
         ###### 三个按钮事件 ######
         self.pushButton_SYGO.clicked.connect(self.on_pushButton1_clicked)
         self.pushButton_XXQD.clicked.connect(self.on_pushButton2_clicked)
@@ -1761,7 +1759,7 @@ class Ui_zhu(object):
 
         return h_box_layout
 
-    #  GO button
+    ##########################################  GO button #########################################
     def on_pushButton1_clicked(self):
         """GO button
         pop file dialog after camera be chosed
@@ -1778,7 +1776,7 @@ class Ui_zhu(object):
             QMessageBox.information(self, "警告提示", "请选择摄像头", QMessageBox.Yes)
             return
 
-        # load image
+        # load image files
         root = Tk()
         root.withdraw()
         self.file_list = askopenfilenames()
@@ -1786,22 +1784,12 @@ class Ui_zhu(object):
         if not self.file_list:
             return
 
+        gl.set_value('files', self.file_list)
         self.source_dir = os.path.dirname(self.file_list[0])
         self.stackedWidget.setCurrentIndex(1)
         self.stackedWidget.repaint()  # repaint immediately
-        self.start_the_animation()
-
-
-        sort_image = threading.Thread(target=fm.manage_image, args=[self.file_list])
-        sort_image.setDaemon(True)
-        sort_image.start()
-
-        # QObject.connect()
-        # self.on_xuanzhuan_tingzi_1()
-        # self.on_xuanzhuan_tingzi_2()
-        # self.show_thumb()
-
-
+        self.start_classify_animation()
+        self.classify_thread.start()
 
     def show_thumb(self):
         """show thumb
@@ -1835,14 +1823,12 @@ class Ui_zhu(object):
                 item = h_layout[chart].itemAt(0)
                 h_layout[chart].removeItem(item)
 
-
     def update_thumb(self, change_dir):
         """
 
         :param dir_list: update dir
         :return:
         """
-
         print('update_thumb', change_dir)
         if len(change_dir) > 0:
             h_layout = self.get_hboxlayout()
@@ -1865,23 +1851,22 @@ class Ui_zhu(object):
                     image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
                     label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
 
-
     def on_pushButton2_clicked(self):
         """start to do analyzer button
 
         :return:
         """
-        # change ui to show analyzing  stats
         self.stackedWidget.setCurrentIndex(2)
         self.stackedWidget.repaint()  # repaint immediately
-        fm.analyze_image(self.camera, self.source_dir)
 
+    def repaint(self):
+        self.stackedWidget.repaint()
 
     def on_pushButton3_clicked(self):
         pass
         # self.stackedWidget.setCurrentIndex(3)
 
-    #  back home
+    ############################  back home  ###########################
     def on_pushButton0_clicked(self):
         self.stackedWidget.setCurrentIndex(0)
         self.clear_thumb()
@@ -1910,12 +1895,12 @@ class Ui_zhu(object):
     def aa_pushButton_SYGB(self):
         exit(0)
 
-
     def show_thumb(self):
         """show thumb
 
         :return:
         """
+        print('Enter show thumb')
         h_layout = self.get_hboxlayout()
         for chart in gl.get_value('folder_list'):
             label = {}
@@ -1930,6 +1915,7 @@ class Ui_zhu(object):
                 h_layout[chart].addWidget(label[idx])  # layout：布局：添加label i
                 image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
                 label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
+        print('Exit show thumb')
 
     def clear_thumb(self):
         """clear thumb
@@ -1942,7 +1928,6 @@ class Ui_zhu(object):
             for idx in range(h_layout[chart].count()):
                 item = h_layout[chart].itemAt(0)
                 h_layout[chart].removeItem(item)
-
 
     def update_thumb(self, change_dir):
         """
@@ -1973,9 +1958,9 @@ class Ui_zhu(object):
                     image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
                     label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
 
-
-#                           分类动画
-    def start_the_animation(self):
+    #                           分类动画
+    def start_classify_animation(self):
+        print('Enter start_the_animation')
         self.listView_Anim = QPropertyAnimation(self.Start_the_GIF, b"geometry")
         self.listView_Anim.setDuration(1)  # 设定动画时间
         self.listView_Anim.setStartValue(QRect(0, 0, 0, 0))  # 设置起始大小
@@ -1984,20 +1969,19 @@ class Ui_zhu(object):
         self.movie = QMovie("./image/GIF/classifing.gif")
         self.Start_the_GIF.setMovie(self.movie)
         self.movie.start()
+        print('Exit start_the_animation')
 
-    def on_xuanzhuan_tingzi_1(self):
-        self.listView_Anim = QPropertyAnimation(self.Start_the_GIF, b"geometry")  # 参数self.listView就是要进行动画设置的组件，用返回的对象来进行设置
-        self.listView_Anim.setDuration(1)  # 设定动画时间
-        self.listView_Anim.setEndValue(QRect(0, 0, 0, 0))  # 设置终止大小
-        self.listView_Anim.start()  # 动画开始
+    def quit_classify_animation(self):
+        self.Start_the_GIF.deleteLater()
+        self.movie.deleteLater()
+        self.Grey_cloth.deleteLater()
 
-    def on_xuanzhuan_tingzi_2(self):
-        self.listView_Anim = QPropertyAnimation(self.Grey_cloth, b"geometry")  # 参数self.listView就是要进行动画设置的组件，用返回的对象来进行设置
-        self.listView_Anim.setDuration(1)  # 设定动画时间
-        self.listView_Anim.setEndValue(QRect(0, 0, 0, 0))  # 设置终止大小
-        self.listView_Anim.start()  # 动画开始'''
+    def classify_finish(self):
+        self.quit_classify_animation()
+        self.show_thumb()
 
-#----------------------------------------------点亮--------------------------------------------------------
+
+    # ----------------------------------------------点亮--------------------------------------------------------
 
     def heji(self):
         self.ColorChecker_bright()
@@ -2059,7 +2043,6 @@ class Ui_zhu(object):
         self.DeadLeaf_grey.setMovie(self.movie)
         self.movie.start()
 
-
     def Scroll_bright(self):
         self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155321.png);")
         self.movie = QMovie()
@@ -2071,8 +2054,8 @@ class Ui_zhu(object):
         self.movie = QMovie()
         self.Flicker_grey.setMovie(self.movie)
         self.movie.start()
-#-------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------GIF显示-----------------------------------------------------------------
+        # -------------------------------------------------------------------------------------------------------------------------
+        # -----------------------------------------GIF显示-----------------------------------------------------------------
         '''
         24色卡				ColorChecker_GIF
         OECF				OECF_GIF
@@ -2086,6 +2069,7 @@ class Ui_zhu(object):
         工频干扰				Flicker_GIF
 
         '''
+
     def GIF(self):
         self.ColorChecker_GIFbright()
         self.OECF_GIFbright()
@@ -2109,6 +2093,7 @@ class Ui_zhu(object):
         self.OECF_GIF.setMovie(self.movie)
         self.movie.setScaledSize(QSize(90, 90))
         self.movie.start()
+
     def SiemensStar_GIFbright(self):
         self.movie = QMovie("./image/GIF/processing.gif")
         self.SiemensStar_GIF.setMovie(self.movie)
@@ -2132,6 +2117,7 @@ class Ui_zhu(object):
         self.TE255_GIF.setMovie(self.movie)
         self.movie.setScaledSize(QSize(90, 90))
         self.movie.start()
+
     def DOT_GIFbright(self):
         self.movie = QMovie("./image/GIF/processing.gif")
         self.DOT_GIF.setMovie(self.movie)
@@ -2155,9 +2141,10 @@ class Ui_zhu(object):
         self.Flicker_GIF.setMovie(self.movie)
         self.movie.setScaledSize(QSize(90, 90))
         self.movie.start()
-  #---------------------------------------------------------------------------------------------------
 
-# -----------------------------------------完成-----------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------------
+
+    # -----------------------------------------完成-----------------------------------------------------------------
 
     def wancheng(self):
         self.ColorChecker_completebright()
@@ -2184,6 +2171,7 @@ class Ui_zhu(object):
         self.OECF_GIF.setMovie(self.movie)
         self.movie.setScaledSize(QSize(90, 90))
         self.movie.start()
+
     def SiemensStar_completebright(self):
         self.SiemensStar_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0007.jpg);")
         self.movie = QMovie("")
@@ -2211,6 +2199,7 @@ class Ui_zhu(object):
         self.TE255_GIF.setMovie(self.movie)
         self.movie.setScaledSize(QSize(90, 90))
         self.movie.start()
+
     def DOT_completebright(self):
         self.DOT_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0000.jpg);")
         self.movie = QMovie("")
@@ -2219,7 +2208,7 @@ class Ui_zhu(object):
         self.movie.start()
 
     def DeadLeaf_completebright(self):
-        self. DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0006.jpg);")
+        self.DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0006.jpg);")
         self.movie = QMovie("")
         self.DeadLeaf_GIF.setMovie(self.movie)
         self.movie.setScaledSize(QSize(90, 90))

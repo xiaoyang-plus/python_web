@@ -5,7 +5,6 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5 import QtCore
 from ui_layout import Ui_zhu
-
 import gloabl_var as gl
 
 
@@ -22,7 +21,6 @@ class MyWindow(QWidget, Ui_zhu):
 if __name__ == '__main__':
     # global var init
     gl._init()
-    # global var set
     gl.set_value('report_name', "OPPO手机照相效果客观测试报告.xlsx")
     gl.set_value('folder_list',
                  ["ColorChecker", "TE255", "TVLine", "SiemensStar", "DOT", "DeadLeaf", "OECF", "Scroll", "Flicker",
