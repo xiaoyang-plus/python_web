@@ -117,6 +117,7 @@ def img_resize_2grey(file_path, resize_width, resize_height):
     # cv2.waitKey(0)
     return img_grey
 
+
 def img_resize_2grey_thumb(file_path, resize_width, resize_height):
     """转换为固定大小的灰度图
     :param file_path:
@@ -134,6 +135,37 @@ def img_resize_2grey_thumb(file_path, resize_width, resize_height):
         img_grey = img
     return img_grey, thumb
 
+
+def img_resize_2grey_thumb_1(image, resize_width, resize_height):
+    """转换为固定大小的灰度图
+    :param file_path:
+    :param resize_width:
+    :param resize_height:
+    :return:
+    """
+    img = cv2.resize(image, (resize_width, resize_height), interpolation=cv2.INTER_CUBIC)
+    thumb = cv2.resize(img, (90, 68))
+    try:
+        img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # 转换成灰度图
+    except cv2.error:  # 如果是单通道
+        img_grey = img
+    return img_grey, thumb
+
+
+def img_resize_2thumb(file_path, resize_width, resize_height):
+    """转换为固定大小的灰度图
+    :param file_path:
+    :param resize_width:
+    :param resize_height:
+    :return:
+    """
+    img = read_img(file_path)
+    img = cv2.resize(img, (resize_width, resize_height))
+    # thumb size (68 90)  refer to label size
+    thumb = cv2.resize(img, (90, 68))
+    return thumb
+
+
 def open_files():
     """
     :return:返回选择的文件地址
@@ -150,7 +182,6 @@ def dump_model(clf, model_path):
 
 def load_model(model_path):
     return joblib.load(model_path)
-
 
 # if __name__ == '__main__':
 #     # 用于函数测试

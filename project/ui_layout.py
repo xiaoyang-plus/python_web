@@ -14,7 +14,8 @@ from os.path import isfile, join
 
 import gloabl_var as gl
 from my_label import MyLabel
-from classify_thread import ClassifyThread
+from process_thread import ClassifyThread, AnalyzeThread
+from common import check_dir
 import source_rc
 
 
@@ -26,10 +27,17 @@ class Ui_zhu(object):
         self.file_list = ''
         self.classify_thread = ClassifyThread()
         self.classify_thread.finish_sig.connect(self.classify_finish)
+        self.analyze_thread = AnalyzeThread()
+        self.analyze_thread.processing_sig.connect(self.show_processing_gif)
+        self.analyze_thread.done_sig.connect(self.show_done_state)
+        self.analyze_thread.all_done.connect(self.show_all_done)
 
     def setupUi(self, zhu):
         zhu.setObjectName("zhu")
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)  # 去掉标题栏
+        self.setWindowOpacity(1)  # 设置窗口透明度
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)  # 设置窗口背景透明
+        # self.setWindowFlag(QtCore.Qt.FramelessWindowHint)  # 隐藏边框
         zhu.resize(1200, 700)
         self.stackedWidget = QtWidgets.QStackedWidget(zhu)
         self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 1200, 701))
@@ -242,6 +250,7 @@ class Ui_zhu(object):
                                            "")
         self.pushButton_SYGB.setText("")
         self.pushButton_SYGB.setObjectName("pushButton_SYGB")
+        self.pushButton_SYGB.clicked.connect(self.aa_pushButton_SYGB)
         self.label_2 = QtWidgets.QLabel(self.souye)
         self.label_2.setGeometry(QtCore.QRect(470, 580, 251, 41))
         self.label_2.setStyleSheet("border-image: url(:/new/prefix1/image/an.png);")
@@ -1459,18 +1468,6 @@ class Ui_zhu(object):
                                             "")
         self.pushButton_XSZXH.setText("")
         self.pushButton_XSZXH.setObjectName("pushButton_XSZXH")
-        self.pushButton_linshi_1 = QtWidgets.QPushButton(self.xianshi)
-        self.pushButton_linshi_1.setGeometry(QtCore.QRect(410, 660, 111, 31))
-        self.pushButton_linshi_1.setObjectName("pushButton_linshi_1")
-        self.pushButton_linshi_1.clicked.connect(self.heji)
-        self.pushButton_linshi_2 = QtWidgets.QPushButton(self.xianshi)
-        self.pushButton_linshi_2.setGeometry(QtCore.QRect(530, 660, 111, 31))
-        self.pushButton_linshi_2.setObjectName("pushButton_linshi_2")
-        self.pushButton_linshi_2.clicked.connect(self.GIF)
-        self.pushButton_linshi_3 = QtWidgets.QPushButton(self.xianshi)
-        self.pushButton_linshi_3.setGeometry(QtCore.QRect(660, 660, 111, 31))
-        self.pushButton_linshi_3.setObjectName("pushButton_linshi_3")
-        self.pushButton_linshi_3.clicked.connect(self.wancheng)
         self.ColorChecker_GIF = QtWidgets.QLabel(self.xianshi)
         self.ColorChecker_GIF.setGeometry(QtCore.QRect(165, 160, 90, 90))
         self.ColorChecker_GIF.setStyleSheet("")
@@ -1545,9 +1542,6 @@ class Ui_zhu(object):
         self.pushButton_XSGB.raise_()
         self.pushButton_XSQP.raise_()
         self.pushButton_XSZXH.raise_()
-        self.pushButton_linshi_1.raise_()
-        self.pushButton_linshi_2.raise_()
-        self.pushButton_linshi_3.raise_()
         self.ColorChecker_GIF.raise_()
         self.OECF_GIF.raise_()
         self.TE255_GIF.raise_()
@@ -1724,14 +1718,11 @@ class Ui_zhu(object):
         self.DeadLeaf_name.setText(_translate("zhu", "枯叶图"))
         self.Flicker_name.setText(_translate("zhu", "工频干扰"))
         self.pushButton_XXQD.setText(_translate("zhu", "确定"))
-        self.pushButton_linshi_1.setText(_translate("zhu", "PushButton"))
-        self.pushButton_linshi_2.setText(_translate("zhu", "PushButton"))
-        self.pushButton_linshi_3.setText(_translate("zhu", "PushButton"))
         self.label_QTYBJ.setText(_translate("zhu", "TextLabel"))
 
         ###### 三个按钮事件 ######
-        self.pushButton_SYGO.clicked.connect(self.on_pushButton1_clicked)
-        self.pushButton_XXQD.clicked.connect(self.on_pushButton2_clicked)
+        self.pushButton_SYGO.clicked.connect(self.on_go_button_clicked)
+        self.pushButton_XXQD.clicked.connect(self.on_start_button_clicked)
         self.pushButton_SYDX.clicked.connect(self.on_pushButton3_clicked)
 
         self.pushButton_SYQP.clicked.connect(self.on_pushButton0_clicked)
@@ -1739,28 +1730,7 @@ class Ui_zhu(object):
         self.pushButton_XSQP.clicked.connect(self.on_pushButton0_clicked)
         self.pushButton_QTQP.clicked.connect(self.on_pushButton0_clicked)
 
-    def get_hboxlayout(self):
-        """get dict of chart:QHBoxLayout
-        for thumb show and clear function
-
-        :return:  dict{chart:QHBoxLayout}
-        """
-        h_box_layout = {'ColorChecker': self.ColorChecker_Layout,
-                        'TE255': self.TE255_Layout,
-                        'TVLine': self.TVLine_Layout,
-                        'SiemensStar': self.SiemensStar_Layout,
-                        'DOT': self.DOT_Layout,
-                        'DeadLeaf': self.DeadLeaf_Layout,
-                        'OECF': self.OECF_Layout,
-                        'Scroll': self.Scroll_Layout,
-                        'Flicker': self.Flicker_Layout,
-                        'Gray': self.Gray_Layout
-                        }
-
-        return h_box_layout
-
-    ##########################################  GO button #########################################
-    def on_pushButton1_clicked(self):
+    def on_go_button_clicked(self):
         """GO button
         pop file dialog after camera be chosed
 
@@ -1784,19 +1754,53 @@ class Ui_zhu(object):
         if not self.file_list:
             return
 
-        gl.set_value('files', self.file_list)
+        gl.set_value('camera', self.camera)
+        gl.set_value('files', list(self.file_list))
         self.source_dir = os.path.dirname(self.file_list[0])
+        gl.set_value('source_dir', self.source_dir)
         self.stackedWidget.setCurrentIndex(1)
         self.stackedWidget.repaint()  # repaint immediately
         self.start_classify_animation()
         self.classify_thread.start()
+
+    def on_start_button_clicked(self):
+        """start to do analyzer button
+
+        :return:
+        """
+        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.repaint()  # repaint immediately
+        state = check_dir(self.source_dir)
+        print(state)
+        self.show_dir_check_state(state)
+        self.analyze_thread.start()
+
+    def get_thumbs_layout(self):
+        """get dict of chart:QHBoxLayout
+        for thumb show and clear function
+
+        :return:  dict{chart:QHBoxLayout}
+        """
+        thumbs_layout = {'ColorChecker': self.ColorChecker_Layout,
+                        'TE255': self.TE255_Layout,
+                        'TVLine': self.TVLine_Layout,
+                        'SiemensStar': self.SiemensStar_Layout,
+                        'DOT': self.DOT_Layout,
+                        'DeadLeaf': self.DeadLeaf_Layout,
+                        'OECF': self.OECF_Layout,
+                        'Scroll': self.Scroll_Layout,
+                        'Flicker': self.Flicker_Layout,
+                        'Gray': self.Gray_Layout
+                        }
+
+        return thumbs_layout
 
     def show_thumb(self):
         """show thumb
 
         :return:
         """
-        h_layout = self.get_hboxlayout()
+        thumbs_layout = self.get_thumbs_layout()
         for chart in gl.get_value('folder_list'):
             label = {}
             path = os.path.join(self.source_dir, chart, '.thumb')
@@ -1807,7 +1811,7 @@ class Ui_zhu(object):
                 object_name = chart + ':' + file_name  # combine chart type and file name
                 label[idx].setObjectName(object_name)
                 label[idx].setFixedSize(90, 68)  # label i 大小为100；100
-                h_layout[chart].addWidget(label[idx])  # layout：布局：添加label i
+                thumbs_layout[chart].addWidget(label[idx])  # layout：布局：添加label i
                 image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
                 label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
 
@@ -1817,25 +1821,26 @@ class Ui_zhu(object):
 
         :return:
         """
-        h_layout = self.get_hboxlayout()
+        thumbs_layout = self.get_thumbs_layout()
         for chart in gl.get_value('folder_list'):
-            for idx in range(h_layout[chart].count()):
-                item = h_layout[chart].itemAt(0)
-                h_layout[chart].removeItem(item)
+            for idx in range(thumbs_layout[chart].count()):
+                item = thumbs_layout[chart].itemAt(0)
+                thumbs_layout[chart].removeItem(item)
 
     def update_thumb(self, change_dir):
         """
 
+        :param change_dir:
         :param dir_list: update dir
         :return:
         """
         print('update_thumb', change_dir)
         if len(change_dir) > 0:
-            h_layout = self.get_hboxlayout()
+            thumbs_layout = self.get_thumbs_layout()
             for chart in change_dir:
-                for idx in range(h_layout[chart].count()):
-                    item = h_layout[chart].itemAt(0)
-                    h_layout[chart].removeItem(item)
+                for idx in range(thumbs_layout[chart].count()):
+                    item = thumbs_layout[chart].itemAt(0)
+                    thumbs_layout[chart].removeItem(item)
 
             for chart in change_dir:
                 label = {}
@@ -1847,17 +1852,9 @@ class Ui_zhu(object):
                     object_name = chart + ':' + file_name  # combine chart type and file name
                     label[idx].setObjectName(object_name)
                     label[idx].setFixedSize(90, 68)  # label i 大小为100；100  90, 68
-                    h_layout[chart].addWidget(label[idx])  # layout：布局：添加label i
+                    thumbs_layout[chart].addWidget(label[idx])  # layout：布局：添加label i
                     image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
                     label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
-
-    def on_pushButton2_clicked(self):
-        """start to do analyzer button
-
-        :return:
-        """
-        self.stackedWidget.setCurrentIndex(2)
-        self.stackedWidget.repaint()  # repaint immediately
 
     def repaint(self):
         self.stackedWidget.repaint()
@@ -1895,72 +1892,10 @@ class Ui_zhu(object):
     def aa_pushButton_SYGB(self):
         exit(0)
 
-    def show_thumb(self):
-        """show thumb
-
-        :return:
-        """
-        print('Enter show thumb')
-        h_layout = self.get_hboxlayout()
-        for chart in gl.get_value('folder_list'):
-            label = {}
-            path = os.path.join(self.source_dir, chart, '.thumb')
-            imag_list = [f for f in listdir(path) if isfile(join(path, f))]
-
-            for idx, file_name in enumerate(imag_list):  # ：对于i,j在枚举  OK里面
-                label[idx] = MyLabel()
-                object_name = chart + ':' + file_name  # combine chart type and file name
-                label[idx].setObjectName(object_name)
-                label[idx].setFixedSize(90, 68)  # label i 大小为100；100
-                h_layout[chart].addWidget(label[idx])  # layout：布局：添加label i
-                image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
-                label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
-        print('Exit show thumb')
-
-    def clear_thumb(self):
-        """clear thumb
-        clear thumb show UI when back to main UI
-
-        :return:
-        """
-        h_layout = self.get_hboxlayout()
-        for chart in gl.get_value('folder_list'):
-            for idx in range(h_layout[chart].count()):
-                item = h_layout[chart].itemAt(0)
-                h_layout[chart].removeItem(item)
-
-    def update_thumb(self, change_dir):
-        """
-
-        :param dir_list: update dir
-        :return:
-        """
-
-        print('update_thumb', change_dir)
-        if len(change_dir) > 0:
-            h_layout = self.get_hboxlayout()
-            for chart in change_dir:
-                for idx in range(h_layout[chart].count()):
-                    item = h_layout[chart].itemAt(0)
-                    h_layout[chart].removeItem(item)
-
-            for chart in change_dir:
-                label = {}
-                path = os.path.join(self.source_dir, chart, '.thumb')
-                imag_list = [f for f in listdir(path) if isfile(join(path, f))]
-
-                for idx, file_name in enumerate(imag_list):  # ：对于i,j在枚举  OK里面
-                    label[idx] = MyLabel()
-                    object_name = chart + ':' + file_name  # combine chart type and file name
-                    label[idx].setObjectName(object_name)
-                    label[idx].setFixedSize(90, 68)  # label i 大小为100；100  90, 68
-                    h_layout[chart].addWidget(label[idx])  # layout：布局：添加label i
-                    image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
-                    label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
-
-    #                           分类动画
     def start_classify_animation(self):
         print('Enter start_the_animation')
+        self.Grey_cloth.show()
+        self.Start_the_GIF.show()
         self.listView_Anim = QPropertyAnimation(self.Start_the_GIF, b"geometry")
         self.listView_Anim.setDuration(1)  # 设定动画时间
         self.listView_Anim.setStartValue(QRect(0, 0, 0, 0))  # 设置起始大小
@@ -1972,258 +1907,139 @@ class Ui_zhu(object):
         print('Exit start_the_animation')
 
     def quit_classify_animation(self):
-        self.Start_the_GIF.deleteLater()
-        self.movie.deleteLater()
-        self.Grey_cloth.deleteLater()
+        self.Start_the_GIF.clear()
+        self.Start_the_GIF.hide()
+        self.listView_Anim.deleteLater()
+        self.movie.stop()
+        self.Grey_cloth.hide()
 
     def classify_finish(self):
         self.quit_classify_animation()
         self.show_thumb()
 
 
-    # ----------------------------------------------点亮--------------------------------------------------------
+    def show_dir_check_state(self, dir_states):
+        """if folder has test image, The thumb will be lighted
 
-    def heji(self):
-        self.ColorChecker_bright()
-        self.OECF_bright()
-        self.SiemensStar_bright()
-        self.TVLine_bright()
-        self.Gray_bright()
-        self.TE255_bright()
-        self.DOT_bright()
-        self.DeadLeaf_bright()
-        self.Scroll_bright()
-        self.Flicker_bright()
+        :param dir_states:
+        :return:
+        """
+        if dir_states['ColorChecker']:
+            self.ColorChecker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155253.png);")
+        if dir_states['OECF']:
+            self.OECF_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155208.png);")
+        if dir_states['SiemensStar']:
+            self.SiemensStar_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155227.png);")
+        if dir_states['TVLine']:
+            self.TVLine_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155304.png);")
+        if dir_states['Gray']:
+            self.Gray_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155313.png);")
+        if dir_states['TE255']:
+            self.TE255_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155332.png);")
+        if dir_states['DOT']:
+            self.DOT_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155340.png);")
+        if dir_states['DeadLeaf']:
+            self.DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155244.png);")
+        if dir_states['Scroll']:
+            self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155321.png);")
+        if dir_states['Flicker']:
+            self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155334.png);")
 
-    def ColorChecker_bright(self):
-        self.ColorChecker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155253.png);")
-        self.movie = QMovie()
-        self.ColorChecker_grey.setMovie(self.movie)
-        self.movie.start()
+    def show_processing_gif(self, chart):
+        if chart == 'ColorChecker':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.ColorChecker_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
+        if chart == 'OECF':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.OECF_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
+        if chart == 'SiemensStar':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.SiemensStar_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
+        if chart == 'TVLine':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.TVLine_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
+        if chart == 'Gray':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.Gray_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
+        if chart == 'TE255':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.TE255_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
+        if chart == 'DOT':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.DOT_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
+        if chart == 'DeadLeaf':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.DeadLeaf_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
+        if chart == 'Scroll':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.Scroll_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
+        if chart == 'Flicker':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.Flicker_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
 
-    def OECF_bright(self):
-        self.OECF_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155208.png);")
-        self.movie = QMovie()
-        self.OECF_grey.setMovie(self.movie)
-        self.movie.start()
+    def show_done_state(self, chart):
+        if chart == 'ColorChecker':
+            self.ColorChecker_GIF.clear()
+            self.ColorChecker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0005.jpg);")
+        if chart == 'OECF':
+            self.OECF_GIF.clear()
+            self.OECF_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0008.jpg);")
+        if chart == 'SiemensStar':
+            self.SiemensStar_GIF.clear()
+            self.SiemensStar_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0007.jpg);")
+        if chart == 'TVLine':
+            self.TVLine_GIF.clear()
+            self.TVLine_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0004.jpg);")
+        if chart == 'Gray':
+            self.Gray_GIF.clear()
+            self.Gray_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0003.jpg);")
+        if chart == 'TE255':
+            self.TE255_GIF.clear()
+            self.TE255_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0001.jpg);")
+        if chart == 'DOT':
+            self.DOT_GIF.clear()
+            self.DOT_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0000.jpg);")
+        if chart == 'DeadLeaf':
+            self.DeadLeaf_GIF.clear()
+            self.DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0006.jpg);")
+        if chart == 'Scroll':
+            self.Scroll_GIF.clear()
+            self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0002.jpg);")
+        if chart == 'Flicker':
+            self.Flicker_GIF.clear()
+            self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0009.jpg);")
 
-    def SiemensStar_bright(self):
-        self.SiemensStar_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155227.png);")
-        self.movie = QMovie()
-        self.SiemensStar_grey.setMovie(self.movie)
-        self.movie.start()
+    def show_all_done(self):
+        """
 
-    def TVLine_bright(self):
-        self.TVLine_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155304.png);")
-        self.movie = QMovie()
-        self.TVLine_grey.setMovie(self.movie)
-        self.movie.start()
-
-    def Gray_bright(self):
-        self.Gray_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155313.png);")
-        self.movie = QMovie()
-        self.Gray_grey.setMovie(self.movie)
-        self.movie.start()
-
-    def TE255_bright(self):
-        self.TE255_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155332.png);")
-        self.movie = QMovie()
-        self.TE255_grey.setMovie(self.movie)
-        self.movie.start()
-
-    def DOT_bright(self):
-        self.DOT_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155340.png);")
-        self.movie = QMovie()
-        self.DOT_grey.setMovie(self.movie)
-        self.movie.start()
-
-    def DeadLeaf_bright(self):
-        self.DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155244.png);")
-        self.movie = QMovie()
-        self.DeadLeaf_grey.setMovie(self.movie)
-        self.movie.start()
-
-    def Scroll_bright(self):
-        self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155321.png);")
-        self.movie = QMovie()
-        self.Scroll_grey.setMovie(self.movie)
-        self.movie.start()
-
-    def Flicker_bright(self):
-        self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155334.png);")
-        self.movie = QMovie()
-        self.Flicker_grey.setMovie(self.movie)
-        self.movie.start()
-        # -------------------------------------------------------------------------------------------------------------------------
-        # -----------------------------------------GIF显示-----------------------------------------------------------------
-        '''
-        24色卡				ColorChecker_GIF
-        OECF				OECF_GIF
-        西门子星图			SiemensStar_GIF
-        分辨率				TVLine_GIF
-        灰卡				    Gray_GIF
-        坏点				    TE255_GIF
-        点阵图				DOT_GIF
-        枯叶图				DeadLeaf_GIF
-        帧频率				Scroll_GIF
-        工频干扰				Flicker_GIF
-
-        '''
-
-    def GIF(self):
-        self.ColorChecker_GIFbright()
-        self.OECF_GIFbright()
-        self.SiemensStar_GIFbright()
-        self.TVLine_GIFbright()
-        self.Gray_GIFbright()
-        self.TE255_GIFbright()
-        self.DOT_GIFbright()
-        self.DeadLeaf_GIFbright()
-        self.Scroll_GIFbright()
-        self.Flicker_GIFbright()
-
-    def ColorChecker_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.ColorChecker_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def OECF_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.OECF_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def SiemensStar_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.SiemensStar_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def TVLine_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.TVLine_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def Gray_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.Gray_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def TE255_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.TE255_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def DOT_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.DOT_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def DeadLeaf_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.DeadLeaf_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def Scroll_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.Scroll_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def Flicker_GIFbright(self):
-        self.movie = QMovie("./image/GIF/processing.gif")
-        self.Flicker_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    # ---------------------------------------------------------------------------------------------------
-
-    # -----------------------------------------完成-----------------------------------------------------------------
-
-    def wancheng(self):
-        self.ColorChecker_completebright()
-        self.OECF_completebright()
-        self.SiemensStar_completebright()
-        self.TVLine_completebright()
-        self.Gray_completebright()
-        self.TE255_completebright()
-        self.DOT_completebright()
-        self.DeadLeaf_completebright()
-        self.Scroll_completebright()
-        self.Flicker_completebright()
-
-    def ColorChecker_completebright(self):
-        self.ColorChecker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0005.jpg);")
-        self.movie = QMovie("")
-        self.ColorChecker_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def OECF_completebright(self):
-        self.OECF_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0008.jpg);")
-        self.movie = QMovie("")
-        self.OECF_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def SiemensStar_completebright(self):
-        self.SiemensStar_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0007.jpg);")
-        self.movie = QMovie("")
-        self.SiemensStar_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def TVLine_completebright(self):
-        self.TVLine_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0004.jpg);")
-        self.movie = QMovie("")
-        self.TVLine_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def Gray_completebright(self):
-        self.Gray_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0003.jpg);")
-        self.movie = QMovie("")
-        self.Gray_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def TE255_completebright(self):
-        self.TE255_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0001.jpg);")
-        self.movie = QMovie("")
-        self.TE255_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def DOT_completebright(self):
-        self.DOT_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0000.jpg);")
-        self.movie = QMovie("")
-        self.DOT_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def DeadLeaf_completebright(self):
-        self.DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0006.jpg);")
-        self.movie = QMovie("")
-        self.DeadLeaf_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def Scroll_completebright(self):
-        self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0002.jpg);")
-        self.movie = QMovie("")
-        self.Scroll_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
-
-    def Flicker_completebright(self):
-        self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0009.jpg);")
-        self.movie = QMovie("")
-        self.Flicker_GIF.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(90, 90))
-        self.movie.start()
+        :return:
+        """
+        # # QMessageBox.warning(self, "已完成", "已完成", QMessageBox.Yes)
+        # msg = QMessageBox()
+        # msg.setWindowTitle('已完成')
+        # msg.setIcon(QMessageBox.Information)
+        # msg.setText('OPPO工信部客观报告已生成！')
+        # # msg.setStyleSheet("font: 14pt;background-color:rgb(220, 0, 0)");
+        # # msg.addButton(tr("确定"), QMessageBox::ActionRole);
+        # msg.addButton('确定', QMessageBox.AcceptRole)
+        # msg.exec()

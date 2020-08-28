@@ -11,9 +11,6 @@ import shutil
 import gloabl_var as gl
 
 
-TARGET_DIR = ''
-
-
 def make_folder(target_dir):
     """make folder store classify chart.
 
@@ -24,14 +21,17 @@ def make_folder(target_dir):
 
     """
     print('Enter', make_folder.__name__)
-    global TARGET_DIR
-    TARGET_DIR = target_dir
 
     for folder in gl.get_value('folder_list'):
         path = os.path.join(target_dir, folder)
         thumb_path = os.path.join(path, '.thumb')
-        os.makedirs(path)
-        os.makedirs(thumb_path)
+
+        if os.path.isdir(path):
+            print('dir existed')
+            pass
+        else:
+            os.makedirs(path)
+            os.makedirs(thumb_path)
 
     return True
 
@@ -82,11 +82,10 @@ def move_file(path_list):
     """
     print('Enter', move_file.__name__)
 
-    # global SOURCE_PATH
-
     # move base file
-    dst_dir = os.path.join(TARGET_DIR, path_list[0])
-    file = os.path.join(TARGET_DIR, path_list[1], path_list[2])
+    source_dir = gl.get_value('source_dir')
+    dst_dir = os.path.join(source_dir, path_list[0])
+    file = os.path.join(source_dir, path_list[1], path_list[2])
     try:
         shutil.move(file, dst_dir)
     except shutil.Error:
@@ -94,7 +93,7 @@ def move_file(path_list):
 
     # move thumb file
     thumb_dir = os.path.join(dst_dir, '.thumb')
-    thumb_filename = os.path.join(TARGET_DIR, path_list[1], '.thumb', path_list[2])
+    thumb_filename = os.path.join(source_dir, path_list[1], '.thumb', path_list[2])
     shutil.move(thumb_filename, thumb_dir)
 
     win = gl.get_value('win')
@@ -104,22 +103,16 @@ def check_dir(path):
     """
 
     :param path: dir path
-    :return:
+    :return:dir_state{dirname:state}  state 1:has file  state 0:no file
     """
-
-    pass
-
-def update_ui():
-    """
-
-    :return:
-    """
-    print('emit update ui')
-    win = gl.get_value('win')
-    # win.on_xuanzhuan_tingzi_1()
-    # win.on_xuanzhuan_tingzi_2()
-
-    win.on_xuanzhuan_tingzi_1()
-    win.on_xuanzhuan_tingzi_2()
-    win.show_thumb()
-    # win.show_thumb()
+    dir_state = {}
+    folder_list = gl.get_value('folder_list')
+    source_dir = gl.get_value('source_dir')
+    for folder in folder_list:
+        sub_dir = os.path.join(source_dir, folder)
+        if len(os.listdir(sub_dir)) > 1:
+            dir_state[folder] = 1
+        else:
+            dir_state[folder] = 0
+    gl.set_value('dir_state', dir_state)
+    return dir_state

@@ -23,8 +23,8 @@ if __name__ == '__main__':
     gl._init()
     gl.set_value('report_name', "OPPO手机照相效果客观测试报告.xlsx")
     gl.set_value('folder_list',
-                 ["ColorChecker", "TE255", "TVLine", "SiemensStar", "DOT", "DeadLeaf", "OECF", "Scroll", "Flicker",
-                  "Gray"])
+                 ["ColorChecker", "TE255", "TVLine", "SiemensStar", "DOT", "DeadLeaf",
+                  "OECF", "Gray", "OB", "Scroll", "Flicker"])
 
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)

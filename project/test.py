@@ -10,10 +10,10 @@ import os
 import cv2 as cv
 import numpy as np
 import math
-from analyze import ObjectiveAnalyzer
 
-source = "D:\\桌面\\video\\VID20200101173144.mp4"
-dst = "D:\\1\\"
+
+source = "D:\\6.mp4"
+dst = "D:\\6\\"
 
 
 def detect_defect():
@@ -64,7 +64,7 @@ def detect_defect():
 
     print('hot:', hot, 'black:', black, 'defects:', defects)
 
-if __name__ == '__main__':
+def detect_dir_change():
     import os, time
 
     path_to_watch = "D:\\B\\"
@@ -80,18 +80,21 @@ if __name__ == '__main__':
         if removed:
             print('removed', removed)
         before = after
-    # cnt = 1
-    # cap = cv.VideoCapture(source)
-    # while cap.isOpened():
-    #     ret, frame = cap.read()
-    #     # if frame is read correctly ret is True
-    #     if not ret:
-    #         print("Can't receive frame (stream end?). Exiting ...")
-    #         break
-    #
-    #     saved_file = dst + str(cnt) + ".jpg"
-    #     cnt = cnt + 1
-    #     cv.imwrite(saved_file, frame)
+
+if __name__ == '__main__':
+
+    cnt = 1
+    cap = cv.VideoCapture(source)
+    while cap.isOpened():
+        ret, frame = cap.read()
+        # if frame is read correctly ret is True
+        if not ret:
+            print("Can't receive frame (stream end?). Exiting ...")
+            break
+
+        saved_file = dst + str(cnt) + ".jpg"
+        cnt = cnt + 1
+        cv.imwrite(saved_file, frame)
 
     # detect_defect()
 

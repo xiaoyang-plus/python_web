@@ -30,7 +30,6 @@ def manage_image(file_list):
     # classify image
     ml_classify.classify_image(file_list)
     print('Image manage done!')
-    # gl.get_value('win').show_thumb()
 
     return True
 
