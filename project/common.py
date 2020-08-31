@@ -85,7 +85,10 @@ def move_file(path_list):
     # move base file
     source_dir = gl.get_value('source_dir')
     dst_dir = os.path.join(source_dir, path_list[0])
-    file = os.path.join(source_dir, path_list[1], path_list[2])
+    file_stuffix = path_list[2]
+    if 'mp4' in path_list[2]:
+        file_stuffix = path_list[2].replace(".jpg", "")
+    file = os.path.join(source_dir, path_list[1], file_stuffix)
     try:
         shutil.move(file, dst_dir)
     except shutil.Error:
