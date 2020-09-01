@@ -55,54 +55,110 @@ class ReportUtil(object):
         self.__wb.save(self.__report_save_path)
         print('Enter', ReportUtil.__name__, 'save_workbook:', self.__report_save_path)
 
-    def write_report(self, camera, item, data):
+    def write_report(self, camera, test_item, data, sub_item=None):
         """
 
-        :param camera: front or main camera
-        :param item: objective item
-        :param data: {sub_item:data}
+        :param sub_item:
+        :param camera: specified Front or Main camera
+        :param test_item: For example defect,AWB,DR etc.
+        :param data: objective data
+        :param : sub_item
         :return:
         """
-        print('Enter', ReportUtil.__name__, 'write_report:',
-              ' camera:', camera,
-              ' imter:', item
-              )
 
-        if 'DEFECT' == item:
-            self.write_defect_data(camera, data)
-        elif 'POWER_LINE' == item:
+        if 'TE255' == test_item:  # For defect
+            self.write_defect_data(camera, data, sub_item)
+        elif 'OB' == test_item:
+            self.write_ob_data(camera, data)
+        elif 'POWER_LINE' == test_item:
             self.write_power_line_data(camera, data)
-        elif 'COLOR_UNIFORM' == item:
+        elif 'COLOR_UNIFORM' == test_item:
             self.write_color_uniform_data(camera, data)
-        elif 'LUMA_UNIFORM' == item:
+        elif 'LUMA_UNIFORM' == test_item:
             self.write_luma_uniform_data(camera, data)
-        elif 'COLOR_ACCURACY' == item:
+        elif 'COLOR_ACCURACY' == test_item:
             self.write_color_accuracy_data(camera, data)
-        elif 'SATURATION' == item:
+        elif 'SATURATION' == test_item:
             self.write_saturation_data(camera, data)
-        elif 'DR' == item:
+        elif 'DR' == test_item:
             self.write_dr_data(camera, data)
-        elif 'WB' == item:
+        elif 'WB' == test_item:
             self.write_wb_data(camera, data)
-        elif 'CORNER' == item:
+        elif 'CORNER' == test_item:
             self.write_corner_data(camera, data)
 
-        print(item, ' write done!')
+        print(ReportUtil.__name__, 'write_report:',
+              ' camera:', camera,
+              ' test item:', test_item,
+              ' sub item:', sub_item,
+              'Done'
+              )
 
-    def write_defect_data(self, camera, data):
+    def write_defect_data(self, camera, data, sub_item):
+        """
+
+        :param camera:
+        :param data:
+        :param sub_item:
+        :return:
+        """
+        ws = self.__wb.get_sheet_by_name('坏点及视场角')
+        if 'dark' == sub_item:
+            if 'front' == camera:
+                ws['D19'] = data[0]
+                ws['D20'] = data[1]
+            else:  # for main camera
+                ws['E19'] = data[0]
+                ws['E20'] = data[1]
+        else:
+            if 'front' == camera:
+                ws['D15'] = data[0]
+                ws['D16'] = data[1]
+            else:  # for main camera
+                ws['E15'] = data[0]
+                ws['E16'] = data[1]
+
+    def write_ob_data(self, camera, data):
         """
 
         :param camera:
         :param data:
         :return:
         """
-        ws = self.__wb.get_sheet_by_name('坏点及视场角')
+        ws = self.__wb.get_sheet_by_name('暗电流')
+        # if 'front' == camera:
+        #     ws['D6'] = data[2]  # R
+        #     ws['E6'] = data[1]  # G
+        #     ws['F6'] = data[0]  # B
+        # else:  # for main camera
+        #     ws['D7'] = data[2]  # R
+        #     ws['E7'] = data[1]  # G
+        #     ws['F7'] = data[0]  # B
+        #  [0 max_index, 1 b_mean, 2 g_mean, 3 r_mean, 4 files_name]
         if 'front' == camera:
-            ws['D15'] = data[0]
-            ws['D16'] = data[1]
+            ws['D6'] = data[3][data[0]]  # R
+            ws['E6'] = data[2][data[0]]  # G
+            ws['F6'] = data[1][data[0]]  # B
         else:  # for main camera
-            ws['E15'] = data[0]
-            ws['E16'] = data[1]
+            ws['D7'] = data[3][data[0]]  # R
+            ws['E7'] = data[2][data[0]]  # G
+            ws['F7'] = data[1][data[0]]  # B
+
+        start_index = 12
+        files = data[4]
+
+        for index in range(len(files)):
+            cnt_cell = 'B' + str(start_index)
+            ws[cnt_cell] = index + 1
+            file_cell = 'C' + str(start_index)
+            ws[file_cell] = files[index]
+            r_cell = 'H' + str(start_index)
+            g_cell = 'I' + str(start_index)
+            b_cell = 'J' + str(start_index)
+            ws[r_cell] = data[3][index]  # R
+            ws[g_cell] = data[2][index]  # G
+            ws[b_cell] = data[1][index]  # B
+            start_index += 1
 
     def write_power_line_data(self, camera, data):
         """

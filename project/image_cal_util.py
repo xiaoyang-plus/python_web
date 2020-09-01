@@ -17,8 +17,7 @@ def calculate_defect(image):
     :param image:  input rgb image
     :return: [hintImage, total defects, defects num]
     """
-    # image_path = "D:\\test data\\defect.jpg"
-    # image = cv.imread(image_path, cv.IMREAD_COLOR)
+
     image_gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)  # np.ndarray BGR uint8
 
     screen_threshold = 0.2  # preliminarily screen for calculating
@@ -30,6 +29,8 @@ def calculate_defect(image):
     # print(mean[0], std[0])
     upper_limit = mean[0] + mean[0] * screen_threshold
     lower_limit = mean[0] - mean[0] * screen_threshold
+
+    print('upper_limit', upper_limit, 'lower_limit',lower_limit)
 
     window = 16  # standard window
     #  make border for  fast calculating
@@ -65,3 +66,17 @@ def calculate_defect(image):
     total_defect = hot + black
 
     return [image, total_defect, defects]
+
+
+def calculate_ob(image):
+    """
+
+    :param image:
+    :return:rgb_sum, b_mean, g_mean, r_mean
+    """
+    b_mean = np.mean(image[:, :, 0])
+    g_mean = np.mean(image[:, :, 1])
+    r_mean = np.mean(image[:, :, 2])
+    rgb_sum = b_mean + g_mean + r_mean
+
+    return rgb_sum, b_mean, g_mean, r_mean

@@ -8,6 +8,7 @@
 
 import time
 import cv2 as cv
+import numpy as np
 from report_pyxl import ReportUtil
 import image_cal_util as icm
 from common import get_images_filenames
@@ -58,20 +59,42 @@ class AnalyzerManager():
                   test chart: "test item" str
                   info: "information" str
         """
-        print('Enter do_objective_analyze', camera, test_chart, item)
+        print('Enter do_objective_analyze!',
+              '  camera=', camera,
+              '  chart=', test_chart
+              )
         images, files_name = get_images_filenames(self.__source_dir, test_chart)
 
-        time.sleep(2)
         if test_chart == 'OB':
-            pass
+            if len(images) < 10:  # OB images must more than 10 pic
+                return 0, test_chart, "OB测试图卡低于10张"
+
+            g_mean = []
+            r_mean = []
+            b_mean = []
+            bgr_sum = []
+            for i in range(len(images)):
+                sum_bgr, b, g, r = icm.calculate_ob(images[i])
+                bgr_sum.append(sum_bgr)
+                b_mean.append(b)
+                g_mean.append(g)
+                r_mean.append(r)
+
+            max_index = bgr_sum.index(max(bgr_sum))
+            self.__report.write_report(camera, test_chart, [max_index, b_mean, g_mean, r_mean, files_name])
 
         if test_chart == 'TE255':
-            mean, std = cv.meanStdDev(images[0])
+            if len(images) > 2:
+                return 0, test_chart, "坏点测试图片超过2张"
 
-            print(mean)
-            return 0, test_chart, '图片不对'
-            # icm.calculate_defect()
+            for i in range(len(images)):
+                size = images[i].shape
+                g_mean = np.mean(np.mean(images[i][0:size[0] - 1, 0:size[1] - 1, 1]))
+                defect_hint, total_defects, defects = icm.calculate_defect(images[i])
+                sub_item = 'dark'
+                if g_mean > 50:
+                    sub_item = 'bright'
+                self.__report.write_report(camera, test_chart, [total_defects, defects], sub_item)
 
-
-
+        return 1, test_chart, item
 
