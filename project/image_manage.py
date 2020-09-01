@@ -9,16 +9,16 @@
 import os
 from common import make_folder
 import ml_classify
-from analyzer_manager import AnalyzerManager
 
 
-def manage_image(file_list):
+
+def image_manage(file_list):
     """
 
     :param file_list:
     :return:
     """
-    print('Enter', manage_image.__name__)
+    print('Enter', image_manage.__name__)
 
     # get source dir
     source_dir = os.path.dirname(file_list[0])
@@ -33,22 +33,6 @@ def manage_image(file_list):
 
     return True
 
-
-def analyze_image(camera, source_dir):
-    """
-
-    :param camera:
-    :param source_dir:
-    :return:
-    """
-    print('Enter', analyze_image.__name__)
-
-    analyzer = AnalyzerManager(camera, source_dir)
-    analyzer.generate_report()
-    analyzer.do_objective_analyze()
-    analyzer.save_report()
-
-    return True
 
 
 

@@ -9,6 +9,7 @@ from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QSize
 import os
 from tkinter import Tk
 from tkinter.filedialog import askopenfilenames
+import tkinter.messagebox
 from os import listdir
 from os.path import isfile, join
 
@@ -30,6 +31,7 @@ class Ui_zhu(object):
         self.analyze_thread = AnalyzeThread()
         self.analyze_thread.processing_sig.connect(self.show_processing_gif)
         self.analyze_thread.done_sig.connect(self.show_done_state)
+        self.analyze_thread.err_sig.connect(self.show_analyze_info)
         self.analyze_thread.all_done.connect(self.show_all_done)
 
     def setupUi(self, zhu):
@@ -48,43 +50,15 @@ class Ui_zhu(object):
         self.label_SYBJ.setGeometry(QtCore.QRect(0, 0, 1200, 700))
         self.label_SYBJ.setStyleSheet("border-image: url(:/new/prefix1/image/zhu.png);")
         self.label_SYBJ.setObjectName("label_SYBJ")
+
+
         self.pushButton_SYGO = QtWidgets.QPushButton(self.souye)
-        self.pushButton_SYGO.setGeometry(QtCore.QRect(548, 320, 100, 100))
-        self.pushButton_SYGO.setStyleSheet("\n"
-                                           "/*按钮普通态*/\n"
-                                           "QPushButton\n"
-                                           "{\n"
-                                           "    /*字体为微软雅黑*/\n"
-                                           "    font-family:Microsoft Yahei;\n"
-                                           "    /*字体大小为20点*/\n"
-                                           "    font-size:20pt;\n"
-                                           "    /*字体颜色为白色*/    \n"
-                                           "    color:white;\n"
-                                           "    /*背景颜色*/  \n"
-                                           "    background-color:rgb(14 , 150 , 254);\n"
-                                           "    /*边框圆角半径为8像素*/ \n"
-                                           "    border-radius:50%;\n"
-                                           "}\n"
-                                           " \n"
-                                           "/*按钮停留态*/\n"
-                                           "QPushButton:hover\n"
-                                           "{\n"
-                                           "    /*背景颜色*/  \n"
-                                           "    background-color:rgb(44 , 137 , 255);\n"
-                                           "}\n"
-                                           " \n"
-                                           "/*按钮按下态*/\n"
-                                           "QPushButton:pressed\n"
-                                           "{\n"
-                                           "    /*背景颜色*/  \n"
-                                           "    background-color:rgb(14 , 135 , 228);\n"
-                                           "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
-                                           "    padding-left:3px;\n"
-                                           "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
-                                           "    padding-top:3px;\n"
-                                           "}\n"
-                                           "")
+        self.pushButton_SYGO.setGeometry(QtCore.QRect(505, 276, 184, 184))
+        self.pushButton_SYGO.setStyleSheet("background-color: rgba(0, 85, 255, 0);border-radius:80px;")
         self.pushButton_SYGO.setObjectName("pushButton_SYGO")
+
+
+
         self.pushButton_SYDX = QtWidgets.QPushButton(self.souye)
         self.pushButton_SYDX.setGeometry(QtCore.QRect(560, 660, 75, 23))
         self.pushButton_SYDX.setStyleSheet("/*按钮普通态*/\n"
@@ -135,7 +109,7 @@ class Ui_zhu(object):
                                             "    /*字体颜色为白色*/    \n"
                                             "    color:white;\n"
                                             "    /*背景颜色*/  \n"
-                                            "    background-color: rgb(85, 255, 127);\n"
+                                            "    border-image: url(./image/002.png);\n"
                                             "    /*边框圆角半径为8像素*/ \n"
                                             "    border-radius:10px;\n"
                                             "}\n"
@@ -145,7 +119,7 @@ class Ui_zhu(object):
                                             "{\n"
                                             "    /*背景颜色*/  \n"
                                             "     \n"
-                                            "    background-color: rgb(58, 176, 86);\n"
+                                            "    border-image: url(./image/002.png);\n"
                                             "}\n"
                                             " \n"
                                             "/*按钮按下态*/\n"
@@ -153,7 +127,7 @@ class Ui_zhu(object):
                                             "{\n"
                                             "    /*背景颜色*/  \n"
                                             "       \n"
-                                            "    background-color: rgb(1, 255, 18);\n"
+                                            "    border-image: url(./image/002.png);\n"
                                             "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                             "    padding-left:3px;\n"
                                             "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -177,7 +151,7 @@ class Ui_zhu(object):
                                            "    color:white;\n"
                                            "    /*背景颜色*/  \n"
                                            "    \n"
-                                           "    background-color: rgb(214, 217, 23);\n"
+                                           "    border-image: url(./image/timg.png);\n"
                                            "    /*边框圆角半径为8像素*/ \n"
                                            "    border-radius:10px;\n"
                                            "}\n"
@@ -188,7 +162,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "     \n"
                                            "    \n"
-                                           "    background-color: rgb(191, 191, 0);\n"
+                                           "    border-image: url(./image/timg.png);\n"
                                            "}\n"
                                            " \n"
                                            "/*按钮按下态*/\n"
@@ -197,7 +171,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "       \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 255, 0);\n"
+                                           "    border-image: url(./image/timg.png);\n"
                                            "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                            "    padding-left:3px;\n"
                                            "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -221,7 +195,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "    \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 94, 19);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "    /*边框圆角半径为8像素*/ \n"
                                            "    border-radius:10px;\n"
                                            "}\n"
@@ -232,7 +206,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "     \n"
                                            "    \n"
-                                           "    background-color: rgb(188, 0, 0);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "}\n"
                                            " \n"
                                            "/*按钮按下态*/\n"
@@ -241,7 +215,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "       \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 0, 0);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                            "    padding-left:3px;\n"
                                            "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -251,14 +225,62 @@ class Ui_zhu(object):
         self.pushButton_SYGB.setText("")
         self.pushButton_SYGB.setObjectName("pushButton_SYGB")
         self.pushButton_SYGB.clicked.connect(self.aa_pushButton_SYGB)
-        self.label_2 = QtWidgets.QLabel(self.souye)
-        self.label_2.setGeometry(QtCore.QRect(470, 580, 251, 41))
-        self.label_2.setStyleSheet("border-image: url(:/new/prefix1/image/an.png);")
-        self.label_2.setText("")
-        self.label_2.setObjectName("label_2")
+
+        self.pushButton_12 = QtWidgets.QPushButton(self.souye)
+        self.pushButton_12.setGeometry(QtCore.QRect(0, 70, 0, 0))
+        self.pushButton_12.setStyleSheet("QPushButton{ \n"
+                                         "background-color: rgba(255, 255, 255, 0);\n"
+                                         "border-radius:0px;}\n"
+                                         "QPushButton:hover{\n"
+                                         "background-color: rgba(255, 255, 255, 0);\n"
+                                         "}\n"
+                                         "QPushButton:pressed{\n"
+                                         "background-color: rgba(255, 255, 255, 0);\n"
+                                         "}")
+        self.pushButton_12.setText("")
+        self.pushButton_12.setObjectName("pushButton_12")
+        self.pushButton_12.clicked.connect(self.pushButton_12_1)
+
+
+        self.label_3 = QtWidgets.QLabel(self.souye)
+        self.label_3.setGeometry(QtCore.QRect(270, 70, 0, 0))
+        self.label_3.setStyleSheet("border-image: url(./image/4.png);")
+        self.label_3.setTextFormat(QtCore.Qt.RichText)
+        self.label_3.setScaledContents(False)
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setWordWrap(True)
+        self.label_3.setOpenExternalLinks(False)
+        self.label_3.setObjectName("label_3")
+
+        self.pushButton_10 = QtWidgets.QPushButton(self.souye)
+        self.pushButton_10.setGeometry(QtCore.QRect(450, 20, 300, 41))
+        self.pushButton_10.setStyleSheet("QPushButton{ background-color:rgba(14 , 150 , 254 ,0);border-radius:0px;}\n"
+                                         "QPushButton:hover{background-color:rgba(44 , 137 , 255 ,0);}\n"
+                                         "QPushButton:pressed{background-color:rgba(14 , 135 , 228,0);}")
+        self.pushButton_10.setText("")
+        self.pushButton_10.setObjectName("pushButton_10")
+        self.pushButton_10.clicked.connect(self.pushButton_10_1)
+
+        self.pushButton_11 = QtWidgets.QPushButton(self.souye)
+        self.pushButton_11.setGeometry(QtCore.QRect(450, 70, 300, 0))
+        self.pushButton_11.setStyleSheet("QPushButton{ \n"
+                                         "border-image: url(./image/默认.png);\n"
+                                         "border-radius:0px;}\n"
+                                         "QPushButton:hover{\n"
+                                         "border-image: url(./image/悬停.png);\n"
+                                         "}\n"
+                                         "QPushButton:pressed{\n"
+                                         "border-image: url(./image/按下.png);\n"
+                                         "}")
+        self.pushButton_11.setText("")
+        self.pushButton_11.setObjectName("pushButton_11")
+        self.pushButton_11.clicked.connect(self.pushButton_11_1)
+
+
+
         self.radioButton = QtWidgets.QRadioButton(self.souye)
         self.radioButton.setGeometry(QtCore.QRect(500, 590, 89, 21))
-        self.radioButton.setStyleSheet("QRadioButton{font-size: 14pt \"黑体\";color: rgb(255, 255, 255);}\n"
+        self.radioButton.setStyleSheet("QRadioButton{font-size: 16pt \"黑体\";color: rgb(255, 255, 255);}\n"
                                        "QRadioButton::indicator{width:20px; height:13px;color: rgb(255, 255, 255);}\n"
                                        "QRadioButton::indicator:unchecked{color: rgb(195, 195, 195);}\n"
                                        "QRadioButton::indicator:checked{color: rgb(85, 255, 255);}\n"
@@ -266,12 +288,24 @@ class Ui_zhu(object):
         self.radioButton.setObjectName("radioButton")
         self.radioButton_2 = QtWidgets.QRadioButton(self.souye)
         self.radioButton_2.setGeometry(QtCore.QRect(600, 590, 71, 21))
-        self.radioButton_2.setStyleSheet("QRadioButton{font-size: 14pt \"黑体\";color: rgb(255, 255, 255);}\n"
+        self.radioButton_2.setStyleSheet("QRadioButton{font-size: 16pt \"黑体\";color: rgb(255, 255, 255);}\n"
                                          "QRadioButton::indicator{width:20px; height:13px;color: rgb(255, 255, 255);}\n"
                                          "QRadioButton::indicator:unchecked{color: rgb(195, 195, 195);}\n"
                                          "QRadioButton::indicator:checked{color: rgb(85, 255, 255);}\n"
                                          "")
         self.radioButton_2.setObjectName("radioButton_2")
+
+        self.label_2 = QtWidgets.QLabel(self.souye)
+        self.label_2.setGeometry(QtCore.QRect(505, 276, 180, 180))
+        self.label_2.setStyleSheet("background-color: rgba(0, 85, 255,0);border-radius:80px;")
+        self.label_2.setObjectName("label_2")
+        self.gif = QMovie('.\image\GIF\AI按键_3.gif')
+        self.label_2.setMovie(self.gif)
+        self.gif.start()
+
+
+
+
         self.stackedWidget.addWidget(self.souye)
         self.xiangxi = QtWidgets.QWidget()
         self.xiangxi.setObjectName("xiangxi")
@@ -319,35 +353,43 @@ class Ui_zhu(object):
         self.scrollArea_gd.setWidgetResizable(True)
         self.scrollArea_gd.setObjectName("scrollArea_gd")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -650, 1156, 1200))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -650, 1156, 1320))
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.scrollAreaWidgetContents.sizePolicy().hasHeightForWidth())
         self.scrollAreaWidgetContents.setSizePolicy(sizePolicy)
-        self.scrollAreaWidgetContents.setMinimumSize(QtCore.QSize(700, 1200))
+        self.scrollAreaWidgetContents.setMinimumSize(QtCore.QSize(700, 1320))
         self.scrollAreaWidgetContents.setStyleSheet("background-color: rgba(255, 255, 255,0);")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+
         self.ColorChecker_background = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.ColorChecker_background.setGeometry(QtCore.QRect(0, 0, 1150, 120))
         self.ColorChecker_background.setStyleSheet("image: url(:/new/prefix1/image/lie.png);")
         self.ColorChecker_background.setText("")
         self.ColorChecker_background.setObjectName("ColorChecker_background")
+
         self.ColorChecker_figure = MyLabel(self.scrollAreaWidgetContents)
         self.ColorChecker_figure.setGeometry(QtCore.QRect(35, 30, 70, 50))
         self.ColorChecker_figure.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155253.png);")
         self.ColorChecker_figure.setText("")
         self.ColorChecker_figure.setObjectName("ColorChecker")
+
         self.ColorChecker_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.ColorChecker_name.setGeometry(QtCore.QRect(35, 90, 71, 16))
         self.ColorChecker_name.setStyleSheet("color: rgb(85, 255, 255);\n"
                                              "font: 10pt \"黑体\";")
         self.ColorChecker_name.setAlignment(QtCore.Qt.AlignCenter)
         self.ColorChecker_name.setObjectName("ColorChecker_name")
+
+
+
+
+
         self.OECF_figure = MyLabel(self.scrollAreaWidgetContents)
         self.OECF_figure.setGeometry(QtCore.QRect(35, 150, 70, 50))
-        self.OECF_figure.setStyleSheet("border-image: url(:/new/prefix1/image/20200728155208.png);\n"
-                                       "border-image: url(:/new/prefix1/image/亮图/20200728155208.png);")
+        self.OECF_figure.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155208.png);")
         self.OECF_figure.setText("")
         self.OECF_figure.setObjectName("OECF")
         self.OECF_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
@@ -361,6 +403,7 @@ class Ui_zhu(object):
         self.OECF_background.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
         self.OECF_background.setText("")
         self.OECF_background.setObjectName("OECF_background")
+
         self.SiemensStar_background = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.SiemensStar_background.setGeometry(QtCore.QRect(0, 240, 1150, 120))
         self.SiemensStar_background.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
@@ -377,6 +420,7 @@ class Ui_zhu(object):
         self.SiemensStar_figure.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155227.png);")
         self.SiemensStar_figure.setText("")
         self.SiemensStar_figure.setObjectName("SiemensStar")
+
         self.TVLine_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.TVLine_name.setGeometry(QtCore.QRect(35, 450, 71, 16))
         self.TVLine_name.setStyleSheet("color: rgb(85, 255, 255);\n"
@@ -393,6 +437,7 @@ class Ui_zhu(object):
         self.TVLine_background.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
         self.TVLine_background.setText("")
         self.TVLine_background.setObjectName("TVLine_background")
+
         self.Gray_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.Gray_name.setGeometry(QtCore.QRect(35, 570, 71, 16))
         self.Gray_name.setStyleSheet("color: rgb(85, 255, 255);\n"
@@ -409,6 +454,7 @@ class Ui_zhu(object):
         self.Gray_background.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
         self.Gray_background.setText("")
         self.Gray_background.setObjectName("Gray_background")
+
         self.Scroll_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.Scroll_name.setGeometry(QtCore.QRect(35, 1050, 71, 16))
         self.Scroll_name.setStyleSheet("color: rgb(85, 255, 255);\n"
@@ -425,6 +471,7 @@ class Ui_zhu(object):
         self.Scroll_background.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
         self.Scroll_background.setText("")
         self.Scroll_background.setObjectName("Scroll_background")
+
         self.TE255_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.TE255_name.setGeometry(QtCore.QRect(35, 690, 71, 16))
         self.TE255_name.setStyleSheet("color: rgb(85, 255, 255);\n"
@@ -441,6 +488,7 @@ class Ui_zhu(object):
         self.TE255_figure.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155332.png);")
         self.TE255_figure.setText("")
         self.TE255_figure.setObjectName("TE255")
+
         self.DOT_background = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.DOT_background.setGeometry(QtCore.QRect(0, 720, 1150, 120))
         self.DOT_background.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
@@ -457,6 +505,7 @@ class Ui_zhu(object):
                                     "font: 10pt \"黑体\";")
         self.DOT_name.setAlignment(QtCore.Qt.AlignCenter)
         self.DOT_name.setObjectName("DOT_name")
+
         self.DeadLeaf_background = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.DeadLeaf_background.setGeometry(QtCore.QRect(0, 840, 1150, 120))
         self.DeadLeaf_background.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
@@ -473,6 +522,11 @@ class Ui_zhu(object):
                                          "font: 10pt \"黑体\";")
         self.DeadLeaf_name.setAlignment(QtCore.Qt.AlignCenter)
         self.DeadLeaf_name.setObjectName("DeadLeaf_name")
+
+
+
+
+
         self.ColorChecker_slider = QtWidgets.QScrollArea(self.scrollAreaWidgetContents)
         self.ColorChecker_slider.setGeometry(QtCore.QRect(130, 20, 1000, 91))
         self.ColorChecker_slider.setStyleSheet("/*首先是设置主体*/\n"
@@ -526,8 +580,61 @@ class Ui_zhu(object):
         self.ColorChecker_Layout.setSpacing(1)
         self.ColorChecker_Layout.setObjectName("ColorChecker_Layout")
         self.ColorChecker_slider.setWidget(self.ColorChecker_Widget)
+
+        self.OB_scrollArea = QtWidgets.QScrollArea(self.scrollAreaWidgetContents)
+        self.OB_scrollArea.setGeometry(QtCore.QRect(130, 1220, 971, 91))
+        self.OB_scrollArea.setStyleSheet("/*首先是设置主体*/\n"
+                                         "QScrollArea{background-color: rgba(54, 62, 68, 0);border: 0px;border-radius:0px;}\n"
+                                         "\n"
+                                         "QScrollBar:horizontal{margin:0px 30px 0px 30px;background-color: rgba(54, 62, 68, 0);border: 0px;height:8px;    }\n"
+                                         "/*滑块*/\n"
+                                         "QScrollBar::handle:horizontal{background-color: rgb(39, 115, 230);height:8px;border-radius:4px;/*圆角*/}\n"
+                                         "/*悬停滑块*/\n"
+                                         "QScrollBar::handle:horizontal:hover{background-color: rgb(30, 90, 180);height:1px;border-radius:4px;}\n"
+                                         "\n"
+                                         "/*为滚动条下面的箭头区域*/\n"
+                                         "QScrollBar::add-line:horizontal{subcontrol-origin: margin;border:1px solid rgb(117, 171, 253);width:8px;height:8px;}\n"
+                                         "/*为滚动条上面的箭头区域*/\n"
+                                         "QScrollBar::sub-line:horizontal{subcontrol-origin: margin;border:1px solid rgb(117, 171, 253);width:8px;height:8px;}\n"
+                                         "\n"
+                                         "/*表示未滑过的槽部分*/\n"
+                                         "QScrollBar::add-page:horizontal{background-color:rgba(240,241,239, 0);}\n"
+                                         "/*表示已滑过的槽部分*/\n"
+                                         "QScrollBar::sub-page:horizontal{background-color:rgba(240,241,239, 0); }\n"
+                                         "\n"
+                                         "/*箭头*/\n"
+                                         "QScrollBar::Totheright-arrow:horizontal{border:1px solid rgb(117, 171, 253);width:5px;height:5px;}\n"
+                                         "\n"
+                                         "/*垂直:按下*/\n"
+                                         "QScrollBar::Totheright-arrow:horizontal:pressed{border:1px solid rgb(117, 171, 253);width:5px;height:5px;}\n"
+                                         "QScrollBar::Totheleft-arrow:horizontal{border:1px solid rgb(117, 171, 253);width:5px;height:5px;}\n"
+                                         "QScrollBar::Totheleft-arrow:horizontal:pressed {border:1px solid rgb(117, 171, 253);width:5px;height:5px;}\n"
+                                         "\n"
+                                         "QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal   // 当滚动条滚动的时候，上面的部分和下面的部分{background:rgba(0,0,0,10%);border-radius:2px;}\n"
+                                         "\n"
+                                         "\n"
+                                         "")
+        self.OB_scrollArea.setFrameShape(QtWidgets.QFrame.Panel)
+        self.OB_scrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.OB_scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.OB_scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.OB_scrollArea.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
+        self.OB_scrollArea.setWidgetResizable(True)
+        self.OB_scrollArea.setObjectName("OB_scrollArea")
+        self.scrollAreaWidgetContents_15 = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents_15.setGeometry(QtCore.QRect(0, 0, 2700, 83))
+        self.scrollAreaWidgetContents_15.setMinimumSize(QtCore.QSize(2700, 0))
+        self.scrollAreaWidgetContents_15.setObjectName("scrollAreaWidgetContents_15")
+        self.horizontalLayoutWidget_15 = QtWidgets.QWidget(self.scrollAreaWidgetContents_15)
+        self.horizontalLayoutWidget_15.setGeometry(QtCore.QRect(0, 0, 2732, 70))
+        self.horizontalLayoutWidget_15.setObjectName("horizontalLayoutWidget_15")
+        # self.OB_Layout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_14)
+        # self.OB_Layout.setContentsMargins(0, 0, 0, 0)
+        # self.OB_Layout.setObjectName("OB_Layout")
+        self.OB_scrollArea.setWidget(self.scrollAreaWidgetContents_15)
+
         self.SiemensStar_slider = QtWidgets.QScrollArea(self.scrollAreaWidgetContents)
-        self.SiemensStar_slider.setGeometry(QtCore.QRect(130, 260, 1000, 91))
+        self.SiemensStar_slider.setGeometry(QtCore.QRect(130, 260, 1220, 91))
         self.SiemensStar_slider.setStyleSheet("/*首先是设置主体*/\n"
                                               "QScrollArea{background-color: rgba(54, 62, 68, 0);border: 0px;border-radius:0px;}\n"
                                               "\n"
@@ -990,6 +1097,8 @@ class Ui_zhu(object):
         self.horizontalLayoutWidget_14 = QtWidgets.QWidget(self.Flicker_Widget)
         self.horizontalLayoutWidget_14.setGeometry(QtCore.QRect(0, 0, 2732, 70))
         self.horizontalLayoutWidget_14.setObjectName("horizontalLayoutWidget_14")
+
+
         self.Flicker_Layout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_14)
         self.Flicker_Layout.setContentsMargins(0, 0, 0, 0)
         self.Flicker_Layout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
@@ -1011,17 +1120,48 @@ class Ui_zhu(object):
                                         "font: 10pt \"黑体\";")
         self.Flicker_name.setAlignment(QtCore.Qt.AlignCenter)
         self.Flicker_name.setObjectName("Flicker_name")
+
+
+        self.OB_Layout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_15)
+        self.OB_Layout.setContentsMargins(0, 0, 0, 0)
+        self.OB_Layout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
+        self.OB_Layout.setObjectName("OB_Layout")
+        self.OB_background = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.OB_background.setGeometry(QtCore.QRect(0, 1200, 1150, 120))
+        self.OB_background.setStyleSheet("border-image: url(:/new/prefix1/image/lie.png);")
+        self.OB_background.setText("")
+        self.OB_background.setObjectName("OB_background")
+        self.OB_figure = MyLabel(self.scrollAreaWidgetContents)
+        self.OB_figure.setGeometry(QtCore.QRect(35, 1230, 71, 51))
+        self.OB_figure.setStyleSheet("background-color: rgb(0, 0, 0,);")
+        self.OB_figure.setText("")
+        self.OB_figure.setObjectName("OB")
+        self.OB_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.OB_name.setGeometry(QtCore.QRect(35, 1290, 71, 16))
+        self.OB_name.setStyleSheet("color: rgb(85, 255, 255);\n"
+                                   "font: 10pt \"黑体\";")
+        self.OB_name.setAlignment(QtCore.Qt.AlignCenter)
+        self.OB_name.setObjectName("OB_name")
+
         self.Flicker_background.raise_()
         self.TE255_background.raise_()
         self.Scroll_background.raise_()
         self.Gray_background.raise_()
         self.TVLine_background.raise_()
         self.OECF_background.raise_()
+        self.pushButton_12.raise_()
+        self.label_2.raise_()
+        self.pushButton_SYGO.raise_()
+        self.label_3.raise_()
+        self.pushButton_10.raise_()
+        self.pushButton_11.raise_()
         self.ColorChecker_background.raise_()
+        self.OB_background.raise_()
         self.ColorChecker_figure.raise_()
         self.ColorChecker_name.raise_()
         self.OECF_figure.raise_()
         self.OECF_name.raise_()
+
         self.SiemensStar_background.raise_()
         self.SiemensStar_name.raise_()
         self.SiemensStar_figure.raise_()
@@ -1040,6 +1180,7 @@ class Ui_zhu(object):
         self.DeadLeaf_figure.raise_()
         self.DeadLeaf_name.raise_()
         self.ColorChecker_slider.raise_()
+        self.OB_background.raise_()
         self.SiemensStar_slider.raise_()
         self.OECF_slider.raise_()
         self.TVLine_slider.raise_()
@@ -1051,6 +1192,11 @@ class Ui_zhu(object):
         self.Flicker_slider.raise_()
         self.Flicker_figure.raise_()
         self.Flicker_name.raise_()
+
+        self.OB_scrollArea.raise_()
+        self.OB_figure.raise_()
+        self.OB_name.raise_()
+
         self.scrollArea_gd.setWidget(self.scrollAreaWidgetContents)
         self.pushButton_XXQD = QtWidgets.QPushButton(self.xiangxi)
         self.pushButton_XXQD.setGeometry(QtCore.QRect(540, 650, 111, 31))
@@ -1104,7 +1250,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "    \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 94, 19);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "    /*边框圆角半径为8像素*/ \n"
                                            "    border-radius:10px;\n"
                                            "}\n"
@@ -1115,7 +1261,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "     \n"
                                            "    \n"
-                                           "    background-color: rgb(188, 0, 0);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "}\n"
                                            " \n"
                                            "/*按钮按下态*/\n"
@@ -1124,7 +1270,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "       \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 0, 0);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                            "    padding-left:3px;\n"
                                            "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -1148,7 +1294,7 @@ class Ui_zhu(object):
                                            "    color:white;\n"
                                            "    /*背景颜色*/  \n"
                                            "    \n"
-                                           "    background-color: rgb(214, 217, 23);\n"
+                                           "    border-image: url(./image/timg.png);\n"
                                            "    /*边框圆角半径为8像素*/ \n"
                                            "    border-radius:10px;\n"
                                            "}\n"
@@ -1159,7 +1305,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "     \n"
                                            "    \n"
-                                           "    background-color: rgb(191, 191, 0);\n"
+                                           "    border-image: url(./image/timg.png);\n"
                                            "}\n"
                                            " \n"
                                            "/*按钮按下态*/\n"
@@ -1168,7 +1314,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "       \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 255, 0);\n"
+                                           "    border-image: url(./image/timg.png);\n"
                                            "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                            "    padding-left:3px;\n"
                                            "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -1190,7 +1336,7 @@ class Ui_zhu(object):
                                             "    /*字体颜色为白色*/    \n"
                                             "    color:white;\n"
                                             "    /*背景颜色*/  \n"
-                                            "    background-color: rgb(85, 255, 127);\n"
+                                            "     border-image: url(./image/002.png);\n"
                                             "    /*边框圆角半径为8像素*/ \n"
                                             "    border-radius:10px;\n"
                                             "}\n"
@@ -1200,7 +1346,7 @@ class Ui_zhu(object):
                                             "{\n"
                                             "    /*背景颜色*/  \n"
                                             "     \n"
-                                            "    background-color: rgb(58, 176, 86);\n"
+                                            "     border-image: url(./image/002.png);\n"
                                             "}\n"
                                             " \n"
                                             "/*按钮按下态*/\n"
@@ -1208,7 +1354,7 @@ class Ui_zhu(object):
                                             "{\n"
                                             "    /*背景颜色*/  \n"
                                             "       \n"
-                                            "    background-color: rgb(1, 255, 18);\n"
+                                            "     border-image: url(./image/002.png);\n"
                                             "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                             "    padding-left:3px;\n"
                                             "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -1270,6 +1416,20 @@ class Ui_zhu(object):
         self.label_XS10.setStyleSheet("image: url(:/new/prefix1/image/xsk.png);")
         self.label_XS10.setText("")
         self.label_XS10.setObjectName("label_XS10")
+
+
+        self.label_4 = QtWidgets.QLabel(self.xianshi)
+        self.label_4.setGeometry(QtCore.QRect(980, 700, 320, 0))
+        self.label_4.setStyleSheet("background-color: rgba(126, 250, 252, 20);color: rgb(255, 255, 255);font-size:10pt;")
+        self.label_4.setObjectName("label_4")
+
+
+        self.label_XS11 = QtWidgets.QLabel(self.xianshi)
+        self.label_XS11.setGeometry(QtCore.QRect(625, 490, 200, 170))
+        self.label_XS11.setStyleSheet("image: url(:/new/prefix1/image/xsk.png);")
+        self.label_XS11.setText("")
+        self.label_XS11.setObjectName("label_XS11")
+
         self.label_XS6 = QtWidgets.QLabel(self.xianshi)
         self.label_XS6.setGeometry(QtCore.QRect(370, 300, 200, 170))
         self.label_XS6.setStyleSheet("image: url(:/new/prefix1/image/xsk.png);")
@@ -1306,7 +1466,7 @@ class Ui_zhu(object):
         self.SiemensStar_grey.setText("")
         self.SiemensStar_grey.setObjectName("SiemensStar_grey")
         self.Scroll_grey = QtWidgets.QLabel(self.xianshi)
-        self.Scroll_grey.setGeometry(QtCore.QRect(115, 520, 190, 130))
+        self.Scroll_grey.setGeometry(QtCore.QRect(630, 520, 190, 130))
         self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/帧率.jpg);")
         self.Scroll_grey.setText("")
         self.Scroll_grey.setObjectName("Scroll_grey")
@@ -1340,6 +1500,13 @@ class Ui_zhu(object):
         self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/工频干扰.jpg);")
         self.Flicker_grey.setText("")
         self.Flicker_grey.setObjectName("Flicker_grey")
+
+        self.OB_grey = QtWidgets.QLabel(self.xianshi)
+        self.OB_grey.setGeometry(QtCore.QRect(115, 520, 190, 130))
+        self.OB_grey.setStyleSheet("border-image: url(./image/灰图/ob.jpg);")
+        self.OB_grey.setText("")
+        self.OB_grey.setObjectName("OB")
+
         self.pushButton_XSGB = QtWidgets.QPushButton(self.xianshi)
         self.pushButton_XSGB.setGeometry(QtCore.QRect(1160, 10, 20, 20))
         self.pushButton_XSGB.setStyleSheet("\n"
@@ -1355,7 +1522,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "    \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 94, 19);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "    /*边框圆角半径为8像素*/ \n"
                                            "    border-radius:10px;\n"
                                            "}\n"
@@ -1366,7 +1533,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "     \n"
                                            "    \n"
-                                           "    background-color: rgb(188, 0, 0);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "}\n"
                                            " \n"
                                            "/*按钮按下态*/\n"
@@ -1375,7 +1542,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "       \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 0, 0);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                            "    padding-left:3px;\n"
                                            "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -1399,7 +1566,7 @@ class Ui_zhu(object):
                                            "    color:white;\n"
                                            "    /*背景颜色*/  \n"
                                            "    \n"
-                                           "    background-color: rgb(214, 217, 23);\n"
+                                           "    border-image: url(./image/timg.png);\n"
                                            "    /*边框圆角半径为8像素*/ \n"
                                            "    border-radius:10px;\n"
                                            "}\n"
@@ -1410,7 +1577,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "     \n"
                                            "    \n"
-                                           "    background-color: rgb(191, 191, 0);\n"
+                                           "    border-image: url(./image/timg.png);\n"
                                            "}\n"
                                            " \n"
                                            "/*按钮按下态*/\n"
@@ -1419,7 +1586,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "       \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 255, 0);\n"
+                                           "    border-image: url(./image/timg.png);\n"
                                            "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                            "    padding-left:3px;\n"
                                            "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -1441,7 +1608,7 @@ class Ui_zhu(object):
                                             "    /*字体颜色为白色*/    \n"
                                             "    color:white;\n"
                                             "    /*背景颜色*/  \n"
-                                            "    background-color: rgb(85, 255, 127);\n"
+                                            "     border-image: url(./image/002.png);\n"
                                             "    /*边框圆角半径为8像素*/ \n"
                                             "    border-radius:10px;\n"
                                             "}\n"
@@ -1451,7 +1618,7 @@ class Ui_zhu(object):
                                             "{\n"
                                             "    /*背景颜色*/  \n"
                                             "     \n"
-                                            "    background-color: rgb(58, 176, 86);\n"
+                                            "     border-image: url(./image/002.png);\n"
                                             "}\n"
                                             " \n"
                                             "/*按钮按下态*/\n"
@@ -1459,7 +1626,7 @@ class Ui_zhu(object):
                                             "{\n"
                                             "    /*背景颜色*/  \n"
                                             "       \n"
-                                            "    background-color: rgb(1, 255, 18);\n"
+                                            "     border-image: url(./image/002.png);\n"
                                             "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                             "    padding-left:3px;\n"
                                             "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -1494,7 +1661,7 @@ class Ui_zhu(object):
         self.Gray_GIF.setText("")
         self.Gray_GIF.setObjectName("Gray_GIF")
         self.Scroll_GIF = QtWidgets.QLabel(self.xianshi)
-        self.Scroll_GIF.setGeometry(QtCore.QRect(165, 540, 90, 90))
+        self.Scroll_GIF.setGeometry(QtCore.QRect(680, 540, 90, 90))
         self.Scroll_GIF.setStyleSheet("")
         self.Scroll_GIF.setText("")
         self.Scroll_GIF.setObjectName("Scroll_GIF")
@@ -1519,6 +1686,12 @@ class Ui_zhu(object):
         self.Flicker_GIF.setText("")
         self.Flicker_GIF.setObjectName("Flicker_GIF")
 
+        self.OB_GIF = QtWidgets.QLabel(self.xianshi)
+        self.OB_GIF.setGeometry(QtCore.QRect(165, 540, 90, 90))
+        self.OB_GIF.setStyleSheet("")
+        self.OB_GIF.setText("")
+        self.OB_GIF.setObjectName("OB_GIF")
+
         self.label.raise_()
         self.label_XS1.raise_()
         self.label_XS2.raise_()
@@ -1526,6 +1699,7 @@ class Ui_zhu(object):
         self.label_XS4.raise_()
         self.label_XS8.raise_()
         self.label_XS10.raise_()
+        self.label_XS11.raise_()
         self.label_XS6.raise_()
         self.label_XS7.raise_()
         self.label_XS9.raise_()
@@ -1551,8 +1725,11 @@ class Ui_zhu(object):
         self.TVLine_GIF.raise_()
         self.DOT_GIF.raise_()
         self.SiemensStar_GIF.raise_()
+        self.OB_grey.raise_()
+        self.OB_GIF.raise_()
         self.Flicker_grey.raise_()
         self.Flicker_GIF.raise_()
+        self.label_4.raise_()
         self.stackedWidget.addWidget(self.xianshi)
         self.qita = QtWidgets.QWidget()
         self.qita.setObjectName("qita")
@@ -1580,7 +1757,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "    \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 94, 19);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "    /*边框圆角半径为8像素*/ \n"
                                            "    border-radius:10px;\n"
                                            "}\n"
@@ -1591,7 +1768,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "     \n"
                                            "    \n"
-                                           "    background-color: rgb(188, 0, 0);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "}\n"
                                            " \n"
                                            "/*按钮按下态*/\n"
@@ -1600,7 +1777,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "       \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 0, 0);\n"
+                                           "    border-image: url(./image/001.png);\n"
                                            "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                            "    padding-left:3px;\n"
                                            "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -1624,7 +1801,7 @@ class Ui_zhu(object):
                                            "    color:white;\n"
                                            "    /*背景颜色*/  \n"
                                            "    \n"
-                                           "    background-color: rgb(214, 217, 23);\n"
+                                           "    border-image: url(./image/time.png);\n"
                                            "    /*边框圆角半径为8像素*/ \n"
                                            "    border-radius:10px;\n"
                                            "}\n"
@@ -1635,7 +1812,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "     \n"
                                            "    \n"
-                                           "    background-color: rgb(191, 191, 0);\n"
+                                           "    border-image: url(./image/time.png);\n"
                                            "}\n"
                                            " \n"
                                            "/*按钮按下态*/\n"
@@ -1644,7 +1821,7 @@ class Ui_zhu(object):
                                            "    /*背景颜色*/  \n"
                                            "       \n"
                                            "    \n"
-                                           "    background-color: rgb(255, 255, 0);\n"
+                                           "    border-image: url(./image/time.png);\n"
                                            "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                            "    padding-left:3px;\n"
                                            "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -1666,7 +1843,7 @@ class Ui_zhu(object):
                                             "    /*字体颜色为白色*/    \n"
                                             "    color:white;\n"
                                             "    /*背景颜色*/  \n"
-                                            "    background-color: rgb(85, 255, 127);\n"
+                                            "    border-image: url(./image/002.png);\n"
                                             "    /*边框圆角半径为8像素*/ \n"
                                             "    border-radius:10px;\n"
                                             "}\n"
@@ -1676,7 +1853,7 @@ class Ui_zhu(object):
                                             "{\n"
                                             "    /*背景颜色*/  \n"
                                             "     \n"
-                                            "    background-color: rgb(58, 176, 86);\n"
+                                            "     border-image: url(./image/002.png);\n"
                                             "}\n"
                                             " \n"
                                             "/*按钮按下态*/\n"
@@ -1684,7 +1861,7 @@ class Ui_zhu(object):
                                             "{\n"
                                             "    /*背景颜色*/  \n"
                                             "       \n"
-                                            "    background-color: rgb(1, 255, 18);\n"
+                                            "    border-image: url(./image/002.png);\n"
                                             "    /*左内边距为3像素，让按下时字向右移动3像素*/  \n"
                                             "    padding-left:3px;\n"
                                             "    /*上内边距为3像素，让按下时字向下移动3像素*/  \n"
@@ -1703,10 +1880,13 @@ class Ui_zhu(object):
         _translate = QtCore.QCoreApplication.translate
         zhu.setWindowTitle(_translate("zhu", "Form"))
         self.label_SYBJ.setText(_translate("zhu", "TextLabel"))
-        self.pushButton_SYGO.setText(_translate("zhu", "GO"))
+        self.pushButton_SYGO.setText(_translate("zhu", ""))
         self.pushButton_SYDX.setText(_translate("zhu", "单项"))
+
         self.radioButton.setText(_translate("zhu", "前置"))
         self.radioButton_2.setText(_translate("zhu", "后置"))
+        self.label_3.setText(_translate("zhu", ""))
+        self.label_2.setText(_translate("zhu", ""))
         self.ColorChecker_name.setText(_translate("zhu", "24色卡"))
         self.OECF_name.setText(_translate("zhu", "OECF"))
         self.SiemensStar_name.setText(_translate("zhu", "西门子星图"))
@@ -1717,8 +1897,10 @@ class Ui_zhu(object):
         self.DOT_name.setText(_translate("zhu", "点阵图"))
         self.DeadLeaf_name.setText(_translate("zhu", "枯叶图"))
         self.Flicker_name.setText(_translate("zhu", "工频干扰"))
+        self.OB_name.setText(_translate("zhu", "暗电流"))
         self.pushButton_XXQD.setText(_translate("zhu", "确定"))
         self.label_QTYBJ.setText(_translate("zhu", "TextLabel"))
+        self.label_4.setText(_translate("zhu", "报告已生成！"))
 
         ###### 三个按钮事件 ######
         self.pushButton_SYGO.clicked.connect(self.on_go_button_clicked)
@@ -1771,7 +1953,6 @@ class Ui_zhu(object):
         self.stackedWidget.setCurrentIndex(2)
         self.stackedWidget.repaint()  # repaint immediately
         state = check_dir(self.source_dir)
-        print(state)
         self.show_dir_check_state(state)
         self.analyze_thread.start()
 
@@ -1790,7 +1971,8 @@ class Ui_zhu(object):
                         'OECF': self.OECF_Layout,
                         'Scroll': self.Scroll_Layout,
                         'Flicker': self.Flicker_Layout,
-                        'Gray': self.Gray_Layout
+                        'Gray': self.Gray_Layout,
+                        'OB': self.OB_Layout
                         }
 
         return thumbs_layout
@@ -1856,6 +2038,66 @@ class Ui_zhu(object):
                     image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
                     label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
 
+
+    def pushButton_12_1(self):
+        self.listView_Anim = QPropertyAnimation(self.label_3, b"geometry")
+        self.listView_Anim.setDuration(300)  # 设定动画时间
+        self.listView_Anim.setStartValue(QRect(270, 70, 643, 411))  # 设置起始大小
+        self.listView_Anim.setEndValue(QRect(270, 70, 643, 0))  # 设置终止大小
+
+        self.listView_Anim1 = QPropertyAnimation(self.pushButton_11, b"geometry")
+        self.listView_Anim1.setDuration(400)  # 设定动画时间
+        self.listView_Anim1.setStartValue(QRect(440, 450, 300, 30))  # 设置起始大小
+        self.listView_Anim1.setEndValue(QRect(440, 70, 300, 0))  # 设置终止大小
+
+        self.listView_Anim2 = QPropertyAnimation(self.pushButton_12, b"geometry")
+        self.listView_Anim2.setDuration(300)  # 设定动画时间
+        self.listView_Anim2.setStartValue(QRect(0, 70, 1201, 581))  # 设置起始大小
+        self.listView_Anim2.setEndValue(QRect(0, 70, 1201, 0))  # 设置终止大小
+        self.listView_Anim.start()  # 动画开始
+        self.listView_Anim1.start()  # 动画开始
+        self.listView_Anim2.start()
+
+
+    def pushButton_10_1(self):
+        self.listView_Anim = QPropertyAnimation(self.label_3, b"geometry")
+        self.listView_Anim.setDuration(300)  # 设定动画时间
+        self.listView_Anim.setStartValue(QRect(270, 70, 643, 0))  # 设置起始大小
+        self.listView_Anim.setEndValue(QRect(270, 70, 643, 411))  # 设置终止大小
+
+        self.listView_Anim1 = QPropertyAnimation(self.pushButton_11, b"geometry")
+        self.listView_Anim1.setDuration(300)  # 设定动画时间
+        self.listView_Anim1.setStartValue(QRect(440, 70, 300, 0))  # 设置起始大小
+        self.listView_Anim1.setEndValue(QRect(440, 450, 300, 30))  # 设置终止大小
+
+        self.listView_Anim2 = QPropertyAnimation(self.pushButton_12, b"geometry")
+        self.listView_Anim2.setDuration(300)  # 设定动画时间
+        self.listView_Anim2.setStartValue(QRect(0, 70, 0, 0))  # 设置起始大小
+        self.listView_Anim2.setEndValue(QRect(0, 70, 1201, 581))  # 设置终止大小
+
+        self.listView_Anim.start()  # 动画开始
+        self.listView_Anim1.start()  # 动画开始
+        self.listView_Anim2.start()  # 动画开始
+
+    def pushButton_11_1(self):
+        self.listView_Anim = QPropertyAnimation(self.label_3, b"geometry")
+        self.listView_Anim.setDuration(300)  # 设定动画时间
+        self.listView_Anim.setStartValue(QRect(270, 70, 643, 411))  # 设置起始大小
+        self.listView_Anim.setEndValue(QRect(270, 70, 643, 0))  # 设置终止大小
+
+        self.listView_Anim1 = QPropertyAnimation(self.pushButton_11, b"geometry")
+        self.listView_Anim1.setDuration(300)  # 设定动画时间
+        self.listView_Anim1.setStartValue(QRect(440, 450, 300, 30))  # 设置起始大小
+        self.listView_Anim1.setEndValue(QRect(440, 70, 300, 0))  # 设置终止大小
+
+        self.listView_Anim2 = QPropertyAnimation(self.pushButton_12, b"geometry")
+        self.listView_Anim2.setDuration(300)  # 设定动画时间
+        self.listView_Anim2.setStartValue(QRect(0, 70, 1201, 581))  # 设置起始大小
+        self.listView_Anim2.setEndValue(QRect(0, 70, 1201, 0))  # 设置终止大小
+        self.listView_Anim.start()  # 动画开始
+        self.listView_Anim1.start()  # 动画开始
+        self.listView_Anim2.start()  # 动画开始
+
     def repaint(self):
         self.stackedWidget.repaint()
 
@@ -1865,8 +2107,9 @@ class Ui_zhu(object):
 
     ############################  back home  ###########################
     def on_pushButton0_clicked(self):
-        self.stackedWidget.setCurrentIndex(0)
         self.clear_thumb()
+        self.show_disable_state()
+        self.stackedWidget.setCurrentIndex(0)
 
     def aa_pushButton_ZXH(self):
         """
@@ -1893,7 +2136,6 @@ class Ui_zhu(object):
         exit(0)
 
     def start_classify_animation(self):
-        print('Enter start_the_animation')
         self.Grey_cloth.show()
         self.Start_the_GIF.show()
         self.listView_Anim = QPropertyAnimation(self.Start_the_GIF, b"geometry")
@@ -1904,7 +2146,6 @@ class Ui_zhu(object):
         self.movie = QMovie("./image/GIF/classifing.gif")
         self.Start_the_GIF.setMovie(self.movie)
         self.movie.start()
-        print('Exit start_the_animation')
 
     def quit_classify_animation(self):
         self.Start_the_GIF.clear()
@@ -1914,9 +2155,13 @@ class Ui_zhu(object):
         self.Grey_cloth.hide()
 
     def classify_finish(self):
+        """classify done
+        called when test images classify thread finished. To stop classify animation and show classified result.
+
+        :return:
+        """
         self.quit_classify_animation()
         self.show_thumb()
-
 
     def show_dir_check_state(self, dir_states):
         """if folder has test image, The thumb will be lighted
@@ -1940,12 +2185,20 @@ class Ui_zhu(object):
             self.DOT_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155340.png);")
         if dir_states['DeadLeaf']:
             self.DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155244.png);")
+        if dir_states['OB']:
+            self.OB_grey.setStyleSheet("border-image: url(./image/亮图/ob.png);")
         if dir_states['Scroll']:
             self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155321.png);")
         if dir_states['Flicker']:
             self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/亮图/20200728155334.png);")
 
     def show_processing_gif(self, chart):
+        """show processing animation
+        called when specific test chart in processing
+
+        :param chart: test chart
+        :return:
+        """
         if chart == 'ColorChecker':
             self.movie = QMovie("./image/GIF/processing.gif")
             self.ColorChecker_GIF.setMovie(self.movie)
@@ -1986,6 +2239,11 @@ class Ui_zhu(object):
             self.DeadLeaf_GIF.setMovie(self.movie)
             self.movie.setScaledSize(QSize(90, 90))
             self.movie.start()
+        if chart == 'OB':
+            self.movie = QMovie("./image/GIF/processing.gif")
+            self.OB_GIF.setMovie(self.movie)
+            self.movie.setScaledSize(QSize(90, 90))
+            self.movie.start()
         if chart == 'Scroll':
             self.movie = QMovie("./image/GIF/processing.gif")
             self.Scroll_GIF.setMovie(self.movie)
@@ -1998,6 +2256,12 @@ class Ui_zhu(object):
             self.movie.start()
 
     def show_done_state(self, chart):
+        """show done state
+        called when specific test chart analyze finished
+
+        :param chart: test chart
+        :return:
+        """
         if chart == 'ColorChecker':
             self.ColorChecker_GIF.clear()
             self.ColorChecker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0005.jpg);")
@@ -2028,18 +2292,81 @@ class Ui_zhu(object):
         if chart == 'Flicker':
             self.Flicker_GIF.clear()
             self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0009.jpg);")
+        if chart == 'OB':
+            self.OB_GIF.clear()
+            self.OB_grey.setStyleSheet("border-image: url(./image/完成/ob.jpg);")
+
+    def show_disable_state(self):
+        """
+        called when back home to update state ui. Set all test chart grey
+        :return:
+        """
+        self.DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/枯叶图.jpg);")
+        self.ColorChecker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/24色卡.jpg);")
+        self.SiemensStar_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/西门子.jpg);")
+        self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/帧率.jpg);")
+        self.Gray_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/灰卡.jpg);")
+        self.DOT_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/点阵图.jpg);")
+        self.TE255_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/坏点.jpg);")
+        self.TVLine_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/分辨率.jpg);")
+        self.OB_grey.setStyleSheet("border-image: url(./image/灰图/ob.jpg);")
+        self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/工频干扰.jpg);")
+        self.OECF_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/OECF.jpg);")
+
 
     def show_all_done(self):
-        """
+        """show finished state
+        called when all test chart be analyzed
 
         :return:
         """
-        # # QMessageBox.warning(self, "已完成", "已完成", QMessageBox.Yes)
-        # msg = QMessageBox()
-        # msg.setWindowTitle('已完成')
-        # msg.setIcon(QMessageBox.Information)
-        # msg.setText('OPPO工信部客观报告已生成！')
-        # # msg.setStyleSheet("font: 14pt;background-color:rgb(220, 0, 0)");
-        # # msg.addButton(tr("确定"), QMessageBox::ActionRole);
-        # msg.addButton('确定', QMessageBox.AcceptRole)
-        # msg.exec()
+        self.listView_Anim4 = QPropertyAnimation(self.label_4, b"geometry")
+        self.listView_Anim4.setDuration(500)  # 设定动画时间
+        self.listView_Anim4.setStartValue(QRect(980, 700, 320, 0))  # 设置起始大小
+        self.listView_Anim4.setEndValue(QRect(980, 600, 320, 80))  # 设置终止大小
+        self.listView_Anim4.start()  # 动画开始
+
+
+    def show_analyze_info(self, chart, test_item, info_str):
+        """
+
+        :param chart: test chart
+        :param test_item: specific test item
+        :param info_str: err info to be show in message box
+        :return:
+        """
+        if chart == 'ColorChecker':
+            self.ColorChecker_GIF.clear()
+            self.ColorChecker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0005.jpg);")
+        if chart == 'OECF':
+            self.OECF_GIF.clear()
+            self.OECF_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0008.jpg);")
+        if chart == 'SiemensStar':
+            self.SiemensStar_GIF.clear()
+            self.SiemensStar_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0007.jpg);")
+        if chart == 'TVLine':
+            self.TVLine_GIF.clear()
+            self.TVLine_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0004.jpg);")
+        if chart == 'Gray':
+            self.Gray_GIF.clear()
+            self.Gray_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0003.jpg);")
+        if chart == 'TE255':
+            self.TE255_GIF.clear()
+            self.TE255_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0001.jpg);")
+        if chart == 'DOT':
+            self.DOT_GIF.clear()
+            self.DOT_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0000.jpg);")
+        if chart == 'DeadLeaf':
+            self.DeadLeaf_GIF.clear()
+            self.DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0006.jpg);")
+        if chart == 'OB':
+            self.OB_GIF.clear()
+            self.OB_grey.setStyleSheet("border-image: url(./image/完成/ob.jpg);")
+        if chart == 'Scroll':
+            self.Scroll_GIF.clear()
+            self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0002.jpg);")
+        if chart == 'Flicker':
+            self.Flicker_GIF.clear()
+            self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0009.jpg);")
+
+        tkinter.messagebox.showerror(test_item, info_str)

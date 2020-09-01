@@ -6,9 +6,12 @@
 @date 2020/08/05
 """
 
-from cv2 import imread
+import time
+import cv2 as cv
 from report_pyxl import ReportUtil
 import image_cal_util as icm
+from common import get_images_filenames
+
 import gloabl_var as gl
 
 
@@ -47,27 +50,28 @@ class AnalyzerManager():
         """
         self.__report.save_workbook()
 
-    def do_objective_analyze(self):
+    def do_objective_analyze(self, camera, test_chart, item=None):
+        """MIIT (Ministry of Industry and Information Technology) objective analyze for camera
+
+        :return: [state, test_chart, info]
+                  state: 1 success    0 fail
+                  test chart: "test item" str
+                  info: "information" str
         """
+        print('Enter do_objective_analyze', camera, test_chart, item)
+        images, files_name = get_images_filenames(self.__source_dir, test_chart)
 
-        :return:
-        """
-        pass
+        time.sleep(2)
+        if test_chart == 'OB':
+            pass
 
-    def defects_detect(self):
-        """detect defect pixel and blemish
+        if test_chart == 'TE255':
+            mean, std = cv.meanStdDev(images[0])
 
-        Args:
-            gray_image: detect image
+            print(mean)
+            return 0, test_chart, '图片不对'
+            # icm.calculate_defect()
 
-        Returns:
-            defect_num: the amount of defect pixel
-            blemish_num: the amount of blemishs
-            max_blemish: pixels of max blemish
-        """
-        return
-        image = imread("D:\\test data\\defect.jpg")
-        data = icm.calculate_defect(image)
-        print(data)
-        self.__report.write_defect_data(self.__camera, data)
+
+
 

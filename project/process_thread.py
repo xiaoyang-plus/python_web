@@ -9,8 +9,8 @@
 
 from PyQt5.QtCore import QThread, pyqtSignal
 import gloabl_var as gl
-from frame_manager import manage_image
-from frame_manager import analyze_image
+from image_manage import image_manage
+from analyzer_manager import AnalyzerManager
 
 
 class ClassifyThread(QThread):
@@ -24,7 +24,7 @@ class ClassifyThread(QThread):
         super(ClassifyThread, self).__init__(parent)
 
     def run(self):
-        manage_image(gl.get_value('files'))
+        image_manage(gl.get_value('files'))
         self.finish_sig.emit()
 
 
@@ -34,19 +34,30 @@ class AnalyzeThread(QThread):
     """
     processing_sig = pyqtSignal(str)
     done_sig = pyqtSignal(str)
+    err_sig = pyqtSignal(str, str, str)
     all_done = pyqtSignal()
 
     def __init__(self, parent=None):
         super(AnalyzeThread, self).__init__(parent)
 
     def run(self):
-        # manage_image(gl.get_value('files'))
+        camera = gl.get_value('camera')
+        source_dir = gl.get_value('source_dir')
+        analyzer = AnalyzerManager(camera, source_dir)
+        print('AnalyzeThread', 'camera=', camera, 'source_dir=', source_dir)
+        analyzer.generate_report()
 
-        for item in gl.get_value('folder_list'):
-            self.processing_sig.emit(item)
-            QThread.sleep(2)
-            self.done_sig.emit(item)
+        dir_states = gl.get_value('dir_state')
+        for chart in gl.get_value('folder_list'):
+            if dir_states[chart]:
+                self.processing_sig.emit(chart)
+                ret = analyzer.do_objective_analyze(camera, chart)
 
+                if ret[0]:  # success
+                    self.done_sig.emit(chart)
+                else:
+                    self.err_sig.emit(chart, ret[1], ret[2])
+
+        analyzer.save_report()
         self.all_done.emit()
-
 

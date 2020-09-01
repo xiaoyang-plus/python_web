@@ -8,7 +8,41 @@
 
 import os
 import shutil
+import cv2 as cv
 import gloabl_var as gl
+
+def get_path_filename_suffix(file):
+    """
+
+    :param file:
+    :param fileurl:
+    :return:
+    """
+    file_path, tmp_filename = os.path.split(file)
+    file_name, file_suffix = os.path.splitext(tmp_filename)
+    return file_path, file_name, file_suffix
+
+
+def get_images_filenames(source_dir, chart_folder):
+    """
+
+    :param source_dir:
+    :param chart_folder:
+    :return:
+    """
+    path = os.path.join(source_dir, chart_folder)
+    files = os.listdir(path)  # only file name and suffix
+
+    images = []
+    files_name = []
+    for file in files:
+        file_path = os.path.join(path, file)
+        if os.path.isfile(file_path):
+            tmp_image = cv.imread(file_path)
+            images.append(tmp_image)
+            files_name.append(file)
+
+    return images, files_name
 
 
 def make_folder(target_dir):

@@ -15,22 +15,13 @@ import os
 import shutil
 import cv2 as cv
 import classify_util as ft
+from common import get_path_filename_suffix
 
 import warnings
 
 warnings.filterwarnings('ignore')
 
 
-def get_path_filename_suffix(file):
-    """
-
-    :param file:
-    :param fileurl:
-    :return:
-    """
-    file_path, tmp_filename = os.path.split(file)
-    file_name, file_suffix = os.path.splitext(tmp_filename)
-    return file_path, file_name, file_suffix
 
 
 def classify_image(file_list):
