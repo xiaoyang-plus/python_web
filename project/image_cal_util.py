@@ -201,3 +201,30 @@ def calculate_color_shading(image):
     bb = [b1, b2, b3, b4, b5, b6, b7, b8, b9]
 
     return [bb, gg, rr]
+
+
+def get_target_oecf_chart(image):
+    """
+
+    :param image:
+    :return: 1 or 0.  1 is target; 0 not target
+    """
+    size = image.shape
+    row_begin = round(size[0] * 0.1)
+    row_end = round(size[0] * 0.25)
+    col_begin = round(size[1] * 0.05)
+    col_end = round(size[1] * 0.1)
+
+    r = np.mean(image[row_begin:row_end, col_begin:col_end, 2])
+    g = np.mean(image[row_begin:row_end, col_begin:col_end, 1])
+    b = np.mean(image[row_begin:row_end, col_begin:col_end, 0])
+
+    target = 118
+    diff = 12
+    low_threshold = target - diff
+    hig_threshold = target + diff
+
+    if low_threshold < r < hig_threshold and low_threshold < g < hig_threshold and low_threshold < b < hig_threshold:
+        return 1
+    else:
+        return 0

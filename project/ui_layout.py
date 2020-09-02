@@ -2109,6 +2109,7 @@ class Ui_zhu(object):
     def on_pushButton0_clicked(self):
         self.clear_thumb()
         self.show_disable_state()
+        self.label_4.hide()  # hide all done hint label
         self.stackedWidget.setCurrentIndex(0)
 
     def aa_pushButton_ZXH(self):
@@ -2320,6 +2321,7 @@ class Ui_zhu(object):
 
         :return:
         """
+        self.label_4.show()
         self.listView_Anim4 = QPropertyAnimation(self.label_4, b"geometry")
         self.listView_Anim4.setDuration(500)  # 设定动画时间
         self.listView_Anim4.setStartValue(QRect(980, 700, 320, 0))  # 设置起始大小

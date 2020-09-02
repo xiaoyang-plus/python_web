@@ -7,6 +7,7 @@
 """
 
 import time
+import os
 import cv2 as cv
 import numpy as np
 from report_pyxl import ReportUtil
@@ -115,5 +116,17 @@ class AnalyzerManager():
                 else:
                     return 0, test_chart, "均匀性测试图卡命名不规范"
 
+        if test_chart == 'OECF':
+            for index, file_name in enumerate(files_name):
+                if icm.get_target_oecf_chart(images[index]):
+                    target_path = os.path.join(self.__source_dir, test_chart, "OK")
+                    if os.path.isdir(target_path):
+                        pass
+                    else:
+                        os.makedirs(target_path)
+                    file = os.path.join(target_path, file_name)
+                    cv.imwrite(file, images[index])
+
+        # finished
         return 1, test_chart, item
 
