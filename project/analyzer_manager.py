@@ -66,8 +66,8 @@ class AnalyzerManager():
         images, files_name = get_images_filenames(self.__source_dir, test_chart)
 
         if test_chart == 'OB':
-            if len(images) < 10:  # OB images must more than 10 pic
-                return 0, test_chart, "OB测试图卡低于10张"
+            if len(images) < 10 or len(images) > 15:  # OB images must more than 10 pic
+                return 0, test_chart, "OB测试图卡要求10-15张"
 
             g_mean = []
             r_mean = []

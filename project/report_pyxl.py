@@ -8,6 +8,7 @@
 
 import os
 import openpyxl
+from openpyxl.chart import Series, LineChart, ScatterChart, Reference
 import gloabl_var as gl
 
 
@@ -126,15 +127,6 @@ class ReportUtil(object):
         :return:
         """
         ws = self.__wb.get_sheet_by_name('暗电流')
-        # if 'front' == camera:
-        #     ws['D6'] = data[2]  # R
-        #     ws['E6'] = data[1]  # G
-        #     ws['F6'] = data[0]  # B
-        # else:  # for main camera
-        #     ws['D7'] = data[2]  # R
-        #     ws['E7'] = data[1]  # G
-        #     ws['F7'] = data[0]  # B
-        #  [0 max_index, 1 b_mean, 2 g_mean, 3 r_mean, 4 files_name]
         if 'front' == camera:
             ws['D6'] = data[3][data[0]]  # R
             ws['E6'] = data[2][data[0]]  # G
@@ -144,21 +136,38 @@ class ReportUtil(object):
             ws['E7'] = data[2][data[0]]  # G
             ws['F7'] = data[1][data[0]]  # B
 
-        start_index = 12
+        row_start_index = 12
         files = data[4]
-
-        for index in range(len(files)):
-            cnt_cell = 'B' + str(start_index)
+        image_num = len(files)
+        row_index = row_start_index
+        for index in range(image_num):
+            cnt_cell = 'B' + str(row_index)
             ws[cnt_cell] = index + 1
-            file_cell = 'C' + str(start_index)
-            ws[file_cell] = files[index]
-            r_cell = 'H' + str(start_index)
-            g_cell = 'I' + str(start_index)
-            b_cell = 'J' + str(start_index)
+            # file_cell = 'B' + str(start_index)
+            # ws[file_cell] = files[index]
+            r_cell = 'C' + str(row_index)
+            g_cell = 'D' + str(row_index)
+            b_cell = 'E' + str(row_index)
             ws[r_cell] = data[3][index]  # R
             ws[g_cell] = data[2][index]  # G
             ws[b_cell] = data[1][index]  # B
-            start_index += 1
+            row_index += 1
+
+        chart = ScatterChart()  # LineChart()
+        chart.title = "暗电流"  #图的标题
+        # chart.style = 2  # 线条的style
+        chart.y_axis.title = '灰度值'  # y坐标的标题
+        # c1.x_axis.title = "Date"  # x坐标的标题
+
+        x_value = Reference(ws, min_col=2, min_row=row_start_index, max_row=(row_start_index + image_num - 1))
+        line_color = ['FF0000', '00FF00', '0000FF']
+        for i in range(3, 6):
+            value = Reference(ws, min_col=i, min_row=row_start_index - 1, max_row=(row_start_index + image_num - 1))
+            series = Series(value, x_value, title_from_data=True)
+            series.graphicalProperties.line.solidFill = line_color[i-3]
+            chart.series.append(series)
+
+        ws.add_chart(chart, "B30")  # 将图表添加到 sheet中
 
     def write_power_line_data(self, camera, data):
         """
