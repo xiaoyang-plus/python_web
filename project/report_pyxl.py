@@ -74,7 +74,7 @@ class ReportUtil(object):
         elif 'POWER_LINE' == test_item:
             self.write_power_line_data(camera, data)
         elif 'COLOR_UNIFORM' == test_item:
-            self.write_color_uniform_data(camera, data)
+            self.write_color_uniform_data(camera, data, sub_item)
         elif 'LUMA_UNIFORM' == test_item:
             self.write_luma_uniform_data(camera, data)
         elif 'COLOR_ACCURACY' == test_item:
@@ -192,7 +192,7 @@ class ReportUtil(object):
             ws['H52'] = data[4]  # 60hz 200lux
             ws['I52'] = data[5]  # 60hz 25lux
 
-    def write_color_uniform_data(self, camera, data):
+    def write_color_uniform_data(self, camera, data, sub_item):
         """
 
         :param camera:
@@ -200,10 +200,26 @@ class ReportUtil(object):
         :return:
         """
         ws = self.__wb.get_sheet_by_name('像面色彩均匀度')
-        if 'front' == camera:
-            ws['D51'] = data[0]  # 50hz 800lux
-        else:  # for main camera
-            ws['G51'] = data[0]  # 50hz 800lux
+        row_idx = 0
+        col_idx = 0
+
+        row_start_idx = 23
+        col_start_idx = 5   # E
+        row_idx = 0
+        if 'main' == camera:
+            row_start_idx = 53
+
+        if 'D65' == sub_item:
+            row_idx = row_start_idx + 9
+        elif 'TL84' == sub_item:
+            row_idx = row_start_idx + 18
+        else:  # A
+            row_idx = row_start_idx
+
+        for i in range(9):
+            ws.cell(row=row_idx+2, column=col_start_idx+i, value=data[0][i])  # B
+            ws.cell(row=row_idx+1, column=col_start_idx+i, value=data[1][i])  # G
+            ws.cell(row=row_idx, column=col_start_idx+i, value=data[2][i])  # R
 
     def write_luma_uniform_data(self, camera, data):
         """
@@ -214,9 +230,15 @@ class ReportUtil(object):
         """
         ws = self.__wb.get_sheet_by_name('像面亮度均匀度')
         if 'front' == camera:
-            ws['D51'] = data[0]  # 50hz 800lux
+            ws['D15'] = data[0]
+            ws['E15'] = data[1]
+            ws['F15'] = data[2]
+            ws['G15'] = data[3]
         else:  # for main camera
-            ws['G51'] = data[0]  # 50hz 800lux
+            ws['I15'] = data[0]
+            ws['J15'] = data[1]
+            ws['K15'] = data[2]
+            ws['L15'] = data[3]
 
     def write_color_accuracy_data(self, camera, data):
         """

@@ -96,5 +96,24 @@ class AnalyzerManager():
                     sub_item = 'bright'
                 self.__report.write_report(camera, test_chart, [total_defects, defects], sub_item)
 
+        if test_chart == 'Gray':
+            if len(images) > 3:  # 不超过三张
+                return 0, test_chart, "均匀性测试图卡超过3张"
+
+            for index, file_name in enumerate(files_name):
+                if 'D65' in file_name.upper():
+                    data = icm.calculate_luma_shading(images[index])
+                    self.__report.write_report(camera, 'LUMA_UNIFORM', data)
+                    data = icm.calculate_color_shading(images[index])
+                    self.__report.write_report(camera, 'COLOR_UNIFORM', data, 'D65')
+                elif 'TL84' in file_name.upper():
+                    data = icm.calculate_color_shading(images[index])
+                    self.__report.write_report(camera, 'COLOR_UNIFORM', data, 'TL84')
+                elif 'A' in file_name.upper():
+                    data = icm.calculate_color_shading(images[index])
+                    self.__report.write_report(camera, 'COLOR_UNIFORM', data, 'A')
+                else:
+                    return 0, test_chart, "均匀性测试图卡命名不规范"
+
         return 1, test_chart, item
 
