@@ -1418,11 +1418,11 @@ class Ui_zhu(object):
         self.label_XS10.setObjectName("label_XS10")
 
 
-        self.label_4 = QtWidgets.QLabel(self.xianshi)
-        self.label_4.setGeometry(QtCore.QRect(980, 700, 320, 0))
-        self.label_4.setStyleSheet("background-color: rgba(126, 250, 252, 20);color: rgb(255, 255, 255);font-size:10pt;")
-        self.label_4.setObjectName("label_4")
-
+        self.all_done_label = QtWidgets.QLabel(self.xianshi)
+        self.all_done_label.setGeometry(QtCore.QRect(980, 700, 320, 0))
+        self.all_done_label.setStyleSheet("background-color: rgba(71, 249, 255, 0);color: rgb(255, 255, 255);font-size:18pt;")
+        self.all_done_label.setObjectName("all_done_label")
+        # self.all_done_label.setAlignment()
 
         self.label_XS11 = QtWidgets.QLabel(self.xianshi)
         self.label_XS11.setGeometry(QtCore.QRect(625, 490, 200, 170))
@@ -1729,7 +1729,7 @@ class Ui_zhu(object):
         self.OB_GIF.raise_()
         self.Flicker_grey.raise_()
         self.Flicker_GIF.raise_()
-        self.label_4.raise_()
+        self.all_done_label.raise_()
         self.stackedWidget.addWidget(self.xianshi)
         self.qita = QtWidgets.QWidget()
         self.qita.setObjectName("qita")
@@ -1900,7 +1900,7 @@ class Ui_zhu(object):
         self.OB_name.setText(_translate("zhu", "暗电流"))
         self.pushButton_XXQD.setText(_translate("zhu", "确定"))
         self.label_QTYBJ.setText(_translate("zhu", "TextLabel"))
-        self.label_4.setText(_translate("zhu", "报告已生成！"))
+        self.all_done_label.setText(_translate("zhu", "已生成报告！"))
 
         ###### 三个按钮事件 ######
         self.pushButton_SYGO.clicked.connect(self.on_go_button_clicked)
@@ -2123,7 +2123,7 @@ class Ui_zhu(object):
     def back_home(self):
         self.clear_thumb()
         self.show_disable_state()
-        self.label_4.hide()  # hide all done hint label
+        self.all_done_label.hide()  # hide all done hint label
         self.stackedWidget.setCurrentIndex(0)
 
     def aa_pushButton_ZXH(self):
@@ -2331,19 +2331,6 @@ class Ui_zhu(object):
         self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/工频干扰.jpg);")
         self.OECF_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/OECF.jpg);")
 
-    def show_all_done(self):
-        """show finished state
-        called when all test chart be analyzed
-
-        :return:
-        """
-        self.label_4.show()
-        self.listView_Anim4 = QPropertyAnimation(self.label_4, b"geometry")
-        self.listView_Anim4.setDuration(500)  # 设定动画时间
-        self.listView_Anim4.setStartValue(QRect(980, 700, 320, 0))  # 设置起始大小
-        self.listView_Anim4.setEndValue(QRect(980, 600, 320, 80))  # 设置终止大小
-        self.listView_Anim4.start()  # 动画开始
-
     def show_analyze_info(self, chart, test_item, info_str):
         """
 
@@ -2387,3 +2374,20 @@ class Ui_zhu(object):
             self.Flicker_grey.setStyleSheet("border-image: url(./image/Err/Flicker.jpg);")
 
         tkinter.messagebox.showerror(test_item, info_str)
+
+    def show_all_done(self):
+        """show finished state
+        called when all test chart be analyzed
+
+        :return:
+        """
+        self.all_done_label.show()
+        self.all_done_label.setAlignment(Qt.AlignCenter)
+        # self.all_done_label.setStyleSheet("border-image: url(./image/allDone/type2.png);")
+        self.listView_Anim4 = QPropertyAnimation(self.all_done_label, b"geometry")
+        self.listView_Anim4.setDuration(800)  # 设定动画时间
+        # self.listView_Anim4.setStartValue(QRect(870, 700, 320, 0))  # 设置起始大小
+        # self.listView_Anim4.setEndValue(QRect(870, 600, 320, 80))  # 设置终止大小
+        self.listView_Anim4.setStartValue(QRect(980, 750, 260, 0))  # 设置起始大小
+        self.listView_Anim4.setEndValue(QRect(980, 600, 260, 50))  # 设置终止大小
+        self.listView_Anim4.start()  # 动画开始
