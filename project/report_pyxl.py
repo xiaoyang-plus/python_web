@@ -71,6 +71,8 @@ class ReportUtil(object):
             self.write_defect_data(camera, data, sub_item)
         elif 'OB' == test_item:
             self.write_ob_data(camera, data)
+        elif 'IMAGE_SIZE' == test_item:
+            self.write_size_data(camera, data)
         elif 'POWER_LINE' == test_item:
             self.write_power_line_data(camera, data)
         elif 'COLOR_UNIFORM' == test_item:
@@ -168,6 +170,21 @@ class ReportUtil(object):
             chart.series.append(series)
 
         ws.add_chart(chart, "B30")  # 将图表添加到 sheet中
+
+    def write_size_data(self, camera, data):
+        """
+
+        :param camera:
+        :param data:
+        :return:
+        """
+        ws = self.__wb.get_sheet_by_name('像素及分辨率')
+        if 'front' == camera:
+            ws['D12'] = data[1]
+            ws['E12'] = data[0]
+        else:  # for main camera
+            ws['D13'] = data[1]
+            ws['E13'] = data[0]
 
     def write_power_line_data(self, camera, data):
         """

@@ -9,6 +9,7 @@
 import math
 import numpy as np
 import cv2 as cv
+import copy
 
 
 def calculate_defect(image):
@@ -54,7 +55,6 @@ def calculate_defect(image):
 
     contours, hierarchy = cv.findContours(result, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     cv.drawContours(image, contours, -1, (0, 0, 255), 2)
-    # cv.imwrite("D:\\test data\\result1.jpg", image)
 
     defects = 0
     for cnt in contours:
@@ -62,7 +62,7 @@ def calculate_defect(image):
         if areas > 0:
             defects += 1
 
-    print('hot:', hot, 'black:', black, 'defects:', defects)
+    # print('hot:', hot, 'black:', black, 'defects:', defects)
     total_defect = hot + black
 
     return [image, total_defect, defects]
@@ -228,3 +228,84 @@ def get_target_oecf_chart(image):
         return 1
     else:
         return 0
+
+
+def get_color_checker_pos(image):
+    """get colorChecker up-right and bottom-left point
+
+    :param image:
+    :return:[minX, maxX, minY, maxY]
+    """
+    img_gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)  # 转换成灰度图
+    img_median = cv.medianBlur(img_gray, 5)  # 中值滤波去噪
+    ret1, thresh1 = cv.threshold(img_median, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+    # canny边缘检测
+    canny_edges = cv.Canny(thresh1, 200, 400)
+    contours, hierarchy = cv.findContours(canny_edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+
+    # canny_edges_shape = canny_edges.shape
+    # 创建白色幕布，画轮廓
+    # bgPic = np.zeros((512, 512, 3), np.uint8)  # 生成一个空彩色图像
+
+    # 找到面积符合要求的矩形(在某个范围内)
+    w, h = image.shape[1], image.shape[0]
+
+    ratio = 3  # control ROI size
+    min_width_ratio = ratio * 6  # 每个色块的长宽占比
+    max_width_ratio = ratio * 2
+    min_area = w / min_width_ratio * h / min_width_ratio
+    max_area = w / max_width_ratio * h / max_width_ratio
+    hull_list = []
+    for i in range(0, len(contours)):
+        square_area = cv.contourArea(contours[i])
+        if max_area > square_area > min_area:
+            # if max_area > square_area:
+            area_index = i
+            # area_indexList.append(i)
+            poly = cv.approxPolyDP(contours[area_index], 10, True)
+            hull = cv.convexHull(poly)  # 寻找凸点
+            for i in range(0, len(hull)):
+                hull_list.append(hull[i][0])
+    xList = []
+    yList = []
+    for index in range(0, len(hull_list)):
+        xList.append(hull_list[index][0])
+        yList.append(hull_list[index][1])
+        index += 1
+    try:
+        minx = np.array(xList).min()
+        maxx = np.array(xList).max()
+        miny = np.array(yList).min()
+        maxy = np.array(yList).max()
+        img_cropped_point = [minx, maxx, miny, maxy]
+    except ValueError:
+        img_cropped_point = False
+
+    return img_cropped_point
+
+
+def get_color_checker_24roi(image):
+    """
+
+    :param image:
+    :return: roi_
+    """
+
+    min_x, max_x, min_y, max_y = get_color_checker_pos(image)
+    roi_area = image[min_y:max_y, min_x:max_x]
+
+    roi = copy.deepcopy(roi_area)
+    w, h = roi.shape[1], roi.shape[0]
+    xinterval = round(w / 6)
+    yinterval = round(h / 4)
+    x0 = xinterval // 4  # 起始点，目标区域的左上点
+    y0 = h - yinterval + yinterval // 4
+    y1 = h - yinterval // 4  # 目标区域的右下点
+    roi_list = []
+    for i in range(0, 5):  # 20-23色块，共四个
+        x1 = x0 + (y1 - y0)
+        cv.rectangle(roi_area, (x0, y0), (x1, y1), (0, 0, 225), 5)
+        i += 1
+        x0 = x1 + xinterval - (y1 - y0)
+
+    return roi_area, roi_list

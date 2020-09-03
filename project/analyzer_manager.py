@@ -96,6 +96,8 @@ class AnalyzerManager():
                 if g_mean > 50:
                     sub_item = 'bright'
                 self.__report.write_report(camera, test_chart, [total_defects, defects], sub_item)
+                file = os.path.join(self.__source_dir, test_chart, 'defect_'+files_name[i])
+                cv.imwrite(file, images[i])
 
         if test_chart == 'Gray':
             if len(images) > 3:  # 不超过三张
@@ -126,6 +128,13 @@ class AnalyzerManager():
                         os.makedirs(target_path)
                     file = os.path.join(target_path, file_name)
                     cv.imwrite(file, images[index])
+
+        if test_chart == 'ColorChecker':
+            pass
+
+        if test_chart == 'TVLine':  # just get image size
+            size = images[0].shape
+            self.__report.write_report(camera, 'IMAGE_SIZE', size)
 
         # finished
         return 1, test_chart, item

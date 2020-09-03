@@ -259,7 +259,7 @@ class Ui_zhu(object):
                                          "QPushButton:pressed{background-color:rgba(14 , 135 , 228,0);}")
         self.pushButton_10.setText("")
         self.pushButton_10.setObjectName("pushButton_10")
-        self.pushButton_10.clicked.connect(self.pushButton_10_1)
+        self.pushButton_10.clicked.connect(self.show_about)
 
         self.pushButton_11 = QtWidgets.QPushButton(self.souye)
         self.pushButton_11.setGeometry(QtCore.QRect(450, 70, 300, 0))
@@ -274,7 +274,7 @@ class Ui_zhu(object):
                                          "}")
         self.pushButton_11.setText("")
         self.pushButton_11.setObjectName("pushButton_11")
-        self.pushButton_11.clicked.connect(self.pushButton_11_1)
+        self.pushButton_11.clicked.connect(self.recovery_about)
 
 
 
@@ -1905,12 +1905,12 @@ class Ui_zhu(object):
         ###### 三个按钮事件 ######
         self.pushButton_SYGO.clicked.connect(self.on_go_button_clicked)
         self.pushButton_XXQD.clicked.connect(self.on_start_button_clicked)
-        self.pushButton_SYDX.clicked.connect(self.on_pushButton3_clicked)
+        self.pushButton_SYDX.clicked.connect(self.on_separate_test)
 
-        self.pushButton_SYQP.clicked.connect(self.on_pushButton0_clicked)
-        self.pushButton_XXQP.clicked.connect(self.on_pushButton0_clicked)
-        self.pushButton_XSQP.clicked.connect(self.on_pushButton0_clicked)
-        self.pushButton_QTQP.clicked.connect(self.on_pushButton0_clicked)
+        self.pushButton_SYQP.clicked.connect(self.back_home)
+        self.pushButton_XXQP.clicked.connect(self.back_home)
+        self.pushButton_XSQP.clicked.connect(self.back_home)
+        self.pushButton_QTQP.clicked.connect(self.back_home)
 
     def on_go_button_clicked(self):
         """GO button
@@ -2038,40 +2038,49 @@ class Ui_zhu(object):
                     image = QtGui.QPixmap(os.path.join(path, file_name)).scaled(label[idx].width(), label[idx].height())
                     label[idx].setPixmap(image)  # label i设置象素映射 pix 图像
 
-
     def pushButton_12_1(self):
+        """Recovery "About us" click side area
+
+        :return:
+        """
+        pass
+        # self.listView_Anim = QPropertyAnimation(self.label_3, b"geometry")
+        # self.listView_Anim.setDuration(300)  # 设定动画时间
+        # self.listView_Anim.setStartValue(QRect(270, 70, 643, 411))  # 设置起始大小
+        # self.listView_Anim.setEndValue(QRect(270, 70, 643, 0))  # 设置终止大小
+        #
+        # self.listView_Anim1 = QPropertyAnimation(self.pushButton_11, b"geometry")
+        # self.listView_Anim1.setDuration(300)  # 设定动画时间
+        # self.listView_Anim1.setStartValue(QRect(440, 450, 300, 30))  # 设置起始大小
+        # self.listView_Anim1.setEndValue(QRect(440, 70, 300, 0))  # 设置终止大小
+        #
+        # self.listView_Anim2 = QPropertyAnimation(self.pushButton_12, b"geometry")
+        # self.listView_Anim2.setDuration(300)  # 设定动画时间
+        # self.listView_Anim2.setStartValue(QRect(0, 70, 1201, 581))  # 设置起始大小
+        # self.listView_Anim2.setEndValue(QRect(0, 70, 1201, 0))  # 设置终止大小
+        # self.listView_Anim.start()  # 动画开始
+        # self.listView_Anim1.start()  # 动画开始
+        # self.listView_Anim2.start()
+
+    def show_about(self):
+        """Show About us
+
+        :return:
+        """
+        if self.pushButton_11.pos() == QtCore.QPoint(440, 450):
+            return
         self.listView_Anim = QPropertyAnimation(self.label_3, b"geometry")
-        self.listView_Anim.setDuration(300)  # 设定动画时间
-        self.listView_Anim.setStartValue(QRect(270, 70, 643, 411))  # 设置起始大小
-        self.listView_Anim.setEndValue(QRect(270, 70, 643, 0))  # 设置终止大小
-
-        self.listView_Anim1 = QPropertyAnimation(self.pushButton_11, b"geometry")
-        self.listView_Anim1.setDuration(400)  # 设定动画时间
-        self.listView_Anim1.setStartValue(QRect(440, 450, 300, 30))  # 设置起始大小
-        self.listView_Anim1.setEndValue(QRect(440, 70, 300, 0))  # 设置终止大小
-
-        self.listView_Anim2 = QPropertyAnimation(self.pushButton_12, b"geometry")
-        self.listView_Anim2.setDuration(300)  # 设定动画时间
-        self.listView_Anim2.setStartValue(QRect(0, 70, 1201, 581))  # 设置起始大小
-        self.listView_Anim2.setEndValue(QRect(0, 70, 1201, 0))  # 设置终止大小
-        self.listView_Anim.start()  # 动画开始
-        self.listView_Anim1.start()  # 动画开始
-        self.listView_Anim2.start()
-
-
-    def pushButton_10_1(self):
-        self.listView_Anim = QPropertyAnimation(self.label_3, b"geometry")
-        self.listView_Anim.setDuration(300)  # 设定动画时间
+        self.listView_Anim.setDuration(450)  # 设定动画时间
         self.listView_Anim.setStartValue(QRect(270, 70, 643, 0))  # 设置起始大小
         self.listView_Anim.setEndValue(QRect(270, 70, 643, 411))  # 设置终止大小
 
         self.listView_Anim1 = QPropertyAnimation(self.pushButton_11, b"geometry")
-        self.listView_Anim1.setDuration(300)  # 设定动画时间
+        self.listView_Anim1.setDuration(450)  # 设定动画时间
         self.listView_Anim1.setStartValue(QRect(440, 70, 300, 0))  # 设置起始大小
         self.listView_Anim1.setEndValue(QRect(440, 450, 300, 30))  # 设置终止大小
 
         self.listView_Anim2 = QPropertyAnimation(self.pushButton_12, b"geometry")
-        self.listView_Anim2.setDuration(300)  # 设定动画时间
+        self.listView_Anim2.setDuration(450)  # 设定动画时间
         self.listView_Anim2.setStartValue(QRect(0, 70, 0, 0))  # 设置起始大小
         self.listView_Anim2.setEndValue(QRect(0, 70, 1201, 581))  # 设置终止大小
 
@@ -2079,34 +2088,39 @@ class Ui_zhu(object):
         self.listView_Anim1.start()  # 动画开始
         self.listView_Anim2.start()  # 动画开始
 
-    def pushButton_11_1(self):
+    def recovery_about(self):
+        """Recovery "About us" click "^" button
+
+        :return:
+        """
         self.listView_Anim = QPropertyAnimation(self.label_3, b"geometry")
-        self.listView_Anim.setDuration(300)  # 设定动画时间
+        self.listView_Anim.setDuration(250)  # 设定动画时间
         self.listView_Anim.setStartValue(QRect(270, 70, 643, 411))  # 设置起始大小
         self.listView_Anim.setEndValue(QRect(270, 70, 643, 0))  # 设置终止大小
 
         self.listView_Anim1 = QPropertyAnimation(self.pushButton_11, b"geometry")
-        self.listView_Anim1.setDuration(300)  # 设定动画时间
+        self.listView_Anim1.setDuration(250)  # 设定动画时间
         self.listView_Anim1.setStartValue(QRect(440, 450, 300, 30))  # 设置起始大小
         self.listView_Anim1.setEndValue(QRect(440, 70, 300, 0))  # 设置终止大小
 
         self.listView_Anim2 = QPropertyAnimation(self.pushButton_12, b"geometry")
-        self.listView_Anim2.setDuration(300)  # 设定动画时间
+        self.listView_Anim2.setDuration(250)  # 设定动画时间
         self.listView_Anim2.setStartValue(QRect(0, 70, 1201, 581))  # 设置起始大小
         self.listView_Anim2.setEndValue(QRect(0, 70, 1201, 0))  # 设置终止大小
         self.listView_Anim.start()  # 动画开始
         self.listView_Anim1.start()  # 动画开始
         self.listView_Anim2.start()  # 动画开始
 
-    def repaint(self):
-        self.stackedWidget.repaint()
+    def on_separate_test(self):
+        """For separate test
 
-    def on_pushButton3_clicked(self):
+        :return:
+        """
         pass
         # self.stackedWidget.setCurrentIndex(3)
 
     ############################  back home  ###########################
-    def on_pushButton0_clicked(self):
+    def back_home(self):
         self.clear_thumb()
         self.show_disable_state()
         self.label_4.hide()  # hide all done hint label
@@ -2135,6 +2149,9 @@ class Ui_zhu(object):
 
     def aa_pushButton_SYGB(self):
         exit(0)
+
+    def repaint(self):
+        self.stackedWidget.repaint()
 
     def start_classify_animation(self):
         self.Grey_cloth.show()
@@ -2314,7 +2331,6 @@ class Ui_zhu(object):
         self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/工频干扰.jpg);")
         self.OECF_grey.setStyleSheet("border-image: url(:/new/prefix1/image/灰图/OECF.jpg);")
 
-
     def show_all_done(self):
         """show finished state
         called when all test chart be analyzed
@@ -2328,7 +2344,6 @@ class Ui_zhu(object):
         self.listView_Anim4.setEndValue(QRect(980, 600, 320, 80))  # 设置终止大小
         self.listView_Anim4.start()  # 动画开始
 
-
     def show_analyze_info(self, chart, test_item, info_str):
         """
 
@@ -2339,36 +2354,36 @@ class Ui_zhu(object):
         """
         if chart == 'ColorChecker':
             self.ColorChecker_GIF.clear()
-            self.ColorChecker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0005.jpg);")
+            self.ColorChecker_grey.setStyleSheet("border-image: url(./image/Err/ColorChecker.jpg);")
         if chart == 'OECF':
             self.OECF_GIF.clear()
-            self.OECF_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0008.jpg);")
+            self.OECF_grey.setStyleSheet("border-image: url(./image/Err/OECF.jpg);")
         if chart == 'SiemensStar':
             self.SiemensStar_GIF.clear()
-            self.SiemensStar_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0007.jpg);")
+            self.SiemensStar_grey.setStyleSheet("border-image: url(./image/Err/SiemensStar.jpg);")
         if chart == 'TVLine':
             self.TVLine_GIF.clear()
-            self.TVLine_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0004.jpg);")
+            self.TVLine_grey.setStyleSheet("border-image: url(./image/Err/TVLine.jpg);")
         if chart == 'Gray':
             self.Gray_GIF.clear()
-            self.Gray_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0003.jpg);")
+            self.Gray_grey.setStyleSheet("border-image: url(./image/Err/Gray.jpg);")
         if chart == 'TE255':
             self.TE255_GIF.clear()
-            self.TE255_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0001.jpg);")
+            self.TE255_grey.setStyleSheet("border-image: url(./image/Err/TE255.jpg);")
         if chart == 'DOT':
             self.DOT_GIF.clear()
-            self.DOT_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0000.jpg);")
+            self.DOT_grey.setStyleSheet("border-image: url(./image/Err/DOT.jpg);")
         if chart == 'DeadLeaf':
             self.DeadLeaf_GIF.clear()
-            self.DeadLeaf_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0006.jpg);")
+            self.DeadLeaf_grey.setStyleSheet("border-image: url(./image/Err/DeadLeaf.jpg);")
         if chart == 'OB':
             self.OB_GIF.clear()
-            self.OB_grey.setStyleSheet("border-image: url(./image/完成/ob.jpg);")
+            self.OB_grey.setStyleSheet("border-image: url(./image/Err/OB.jpg);")
         if chart == 'Scroll':
             self.Scroll_GIF.clear()
-            self.Scroll_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0002.jpg);")
+            self.Scroll_grey.setStyleSheet("border-image: url(./image/Err/Scroll.jpg);")
         if chart == 'Flicker':
             self.Flicker_GIF.clear()
-            self.Flicker_grey.setStyleSheet("border-image: url(:/new/prefix1/image/完成/2020_0009.jpg);")
+            self.Flicker_grey.setStyleSheet("border-image: url(./image/Err/Flicker.jpg);")
 
         tkinter.messagebox.showerror(test_item, info_str)
