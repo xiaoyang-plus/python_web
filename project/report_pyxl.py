@@ -80,15 +80,15 @@ class ReportUtil(object):
         elif 'LUMA_UNIFORM' == test_item:
             self.write_luma_uniform_data(camera, data)
         elif 'COLOR_ACCURACY' == test_item:
-            self.write_color_accuracy_data(camera, data)
+            self.write_color_accuracy_data(camera, data, sub_item)
         elif 'SATURATION' == test_item:
-            self.write_saturation_data(camera, data)
-        elif 'DR' == test_item:
-            self.write_dr_data(camera, data)
+            self.write_saturation_data(camera, data, sub_item)
         elif 'WB' == test_item:
-            self.write_wb_data(camera, data)
+            self.write_wb_data(camera, data, sub_item)
         elif 'CORNER' == test_item:
             self.write_corner_data(camera, data)
+        elif 'DR' == test_item:
+            self.write_dr_data(camera, data)
 
         print(ReportUtil.__name__, 'write_report:',
               ' camera:', camera,
@@ -212,6 +212,7 @@ class ReportUtil(object):
     def write_color_uniform_data(self, camera, data, sub_item):
         """
 
+        :param sub_item:
         :param camera:
         :param data:
         :return:
@@ -257,27 +258,78 @@ class ReportUtil(object):
             ws['K15'] = data[2]
             ws['L15'] = data[3]
 
-    def write_color_accuracy_data(self, camera, data):
+    def write_color_accuracy_data(self, camera, data, sub_item):
+        """
+
+        :param sub_item:
+        :param camera:
+        :param data:
+        :return:
+        """
+        ws = self.__wb.get_sheet_by_name('色彩还原误差与饱和度')
+        row = 19
+        col = 'E'  # Front camera
+        if 'main' == camera:
+            col = 'G'
+        if 'TL84' == sub_item:
+            col = chr(ord(col) + 1)
+        for i in range(len(data)):
+            cell = col + str(row + i)
+            ws[cell] = data[i]
+
+    def write_saturation_data(self, camera, data, sub_item):
+        """
+
+        :param camera:
+        :param data:
+        :param sub_item:
+        :return:
+        """
+        ws = self.__wb.get_sheet_by_name('色彩还原误差与饱和度')
+        row = 54  # front camera
+        if 'main' == camera:
+            row = 55
+        if 'D65' == sub_item:
+            col = 'F'
+        elif 'TL84' == sub_item:
+            col = 'G'
+        elif 'A' == sub_item:
+            col = 'H'
+        cell = col + str(row)
+        ws[cell] = data
+
+    def write_wb_data(self, camera, data, sub_item):
+        """
+
+        :param camera:
+        :param data:
+        :param sub_item:
+        :return:
+        """
+        ws = self.__wb.get_sheet_by_name('白平衡')
+        col = 'F'  # front camera
+        if 'main' == camera:
+            col = 'J'
+        row = 0
+        if 'D65' == sub_item:
+            row = 15
+        elif 'TL84' == sub_item:
+            row = 19
+        elif 'A' == sub_item:
+            row = 23
+
+        for i in range(len(data)):
+            cell = col + str(row + i)
+            ws[cell] = data[i]
+
+    def write_corner_data(self, camera, data):
         """
 
         :param camera:
         :param data:
         :return:
         """
-        ws = self.__wb.get_sheet_by_name('色彩还原误差与饱和度')
-        if 'front' == camera:
-            ws['D51'] = data[0]  # 50hz 800lux
-        else:  # for main camera
-            ws['G51'] = data[0]  # 50hz 800lux
-
-    def write_saturation_data(self, camera, data):
-        """
-
-        :param camera:
-        :param data:
-        :return:
-        """
-        ws = self.__wb.get_sheet_by_name('色彩还原误差与饱和度')
+        ws = self.__wb.get_sheet_by_name('白平衡')
         if 'front' == camera:
             ws['D51'] = data[0]  # 50hz 800lux
         else:  # for main camera
@@ -291,32 +343,6 @@ class ReportUtil(object):
         :return:
         """
         ws = self.__wb.get_sheet_by_name('动态范围')
-        if 'front' == camera:
-            ws['D51'] = data[0]  # 50hz 800lux
-        else:  # for main camera
-            ws['G51'] = data[0]  # 50hz 800lux
-
-    def write_wb_data(self, camera, data):
-        """
-
-        :param camera:
-        :param data:
-        :return:
-        """
-        ws = self.__wb.get_sheet_by_name('白平衡')
-        if 'front' == camera:
-            ws['D51'] = data[0]  # 50hz 800lux
-        else:  # for main camera
-            ws['G51'] = data[0]  # 50hz 800lux
-
-    def write_corner_data(self, camera, data):
-        """
-
-        :param camera:
-        :param data:
-        :return:
-        """
-        ws = self.__wb.get_sheet_by_name('白平衡')
         if 'front' == camera:
             ws['D51'] = data[0]  # 50hz 800lux
         else:  # for main camera

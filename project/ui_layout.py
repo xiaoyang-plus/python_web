@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QCursor
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QSize
+from PyQt5.QtCore import QCoreApplication
 import os
 from tkinter import Tk
 from tkinter.filedialog import askopenfilenames
@@ -224,7 +225,7 @@ class Ui_zhu(object):
                                            "")
         self.pushButton_SYGB.setText("")
         self.pushButton_SYGB.setObjectName("pushButton_SYGB")
-        self.pushButton_SYGB.clicked.connect(self.aa_pushButton_SYGB)
+        self.pushButton_SYGB.clicked.connect(QCoreApplication.quit)
 
         self.pushButton_12 = QtWidgets.QPushButton(self.souye)
         self.pushButton_12.setGeometry(QtCore.QRect(0, 70, 0, 0))
@@ -1279,7 +1280,7 @@ class Ui_zhu(object):
                                            "")
         self.pushButton_XXGB.setText("")
         self.pushButton_XXGB.setObjectName("pushButton_XXGB")
-        self.pushButton_XXGB.clicked.connect(self.aa_pushButton_SYGB)
+        self.pushButton_XXGB.clicked.connect(QCoreApplication.quit)
         self.pushButton_XXQP = QtWidgets.QPushButton(self.xiangxi)
         self.pushButton_XXQP.setGeometry(QtCore.QRect(1130, 10, 20, 20))
         self.pushButton_XXQP.setStyleSheet("\n"
@@ -1551,7 +1552,7 @@ class Ui_zhu(object):
                                            "")
         self.pushButton_XSGB.setText("")
         self.pushButton_XSGB.setObjectName("pushButton_XSGB")
-        self.pushButton_XSGB.clicked.connect(self.aa_pushButton_SYGB)
+        self.pushButton_XSGB.clicked.connect(QCoreApplication.quit)
         self.pushButton_XSQP = QtWidgets.QPushButton(self.xianshi)
         self.pushButton_XSQP.setGeometry(QtCore.QRect(1130, 10, 20, 20))
         self.pushButton_XSQP.setStyleSheet("\n"
@@ -1786,7 +1787,7 @@ class Ui_zhu(object):
                                            "")
         self.pushButton_QTGB.setText("")
         self.pushButton_QTGB.setObjectName("pushButton_QTGB")
-        self.pushButton_QTGB.clicked.connect(self.aa_pushButton_SYGB)
+        self.pushButton_QTGB.clicked.connect(QCoreApplication.quit)
         self.pushButton_QTQP = QtWidgets.QPushButton(self.qita)
         self.pushButton_QTQP.setGeometry(QtCore.QRect(1130, 10, 20, 20))
         self.pushButton_QTQP.setStyleSheet("\n"
@@ -2146,9 +2147,6 @@ class Ui_zhu(object):
     def mouseReleaseEvent(self, QMouseEvent):
         self.m_flag = False
         self.setCursor(QCursor(Qt.ArrowCursor))
-
-    def aa_pushButton_SYGB(self):
-        exit(0)
 
     def repaint(self):
         self.stackedWidget.repaint()

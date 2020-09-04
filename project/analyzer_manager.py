@@ -130,7 +130,21 @@ class AnalyzerManager():
                     cv.imwrite(file, images[index])
 
         if test_chart == 'ColorChecker':
-            pass
+            for index, file_name in enumerate(files_name):
+                roi_pick, awb, color_accuracy, saturation = icm.get_awb_accuracy_saturation(images[index])
+                if 'D65' in file_name.upper():
+                    self.__report.write_report(camera, 'WB', awb, 'D65')
+                    self.__report.write_report(camera, 'COLOR_ACCURACY', color_accuracy, 'D65')
+                    self.__report.write_report(camera, 'SATURATION', saturation, 'D65')
+                if 'TL84' in file_name.upper():
+                    self.__report.write_report(camera, 'WB', awb, 'TL84')
+                    self.__report.write_report(camera, 'COLOR_ACCURACY', color_accuracy, 'TL84')
+                    self.__report.write_report(camera, 'SATURATION', saturation, 'TL84')
+                if 'A' in file_name.upper():
+                    self.__report.write_report(camera, 'WB', awb, 'A')
+                    self.__report.write_report(camera, 'SATURATION', saturation, 'A')
+                file = os.path.join(self.__source_dir, test_chart, 'roi_' + files_name[index])
+                cv.imwrite(file, roi_pick)
 
         if test_chart == 'TVLine':  # just get image size
             size = images[0].shape
