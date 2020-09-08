@@ -130,19 +130,25 @@ class AnalyzerManager():
                     cv.imwrite(file, images[index])
 
         if test_chart == 'ColorChecker':
+            free_index = 0
             for index, file_name in enumerate(files_name):
                 roi_pick, awb, color_accuracy, saturation = icm.get_awb_accuracy_saturation(images[index])
-                if 'D65' in file_name.upper():
+                # if 'D65' in file_name.upper():
+                if file_name[0:3].upper() == 'D65':
                     self.__report.write_report(camera, 'WB', awb, 'D65')
                     self.__report.write_report(camera, 'COLOR_ACCURACY', color_accuracy, 'D65')
                     self.__report.write_report(camera, 'SATURATION', saturation, 'D65')
-                if 'TL84' in file_name.upper():
+                elif file_name[0:4].upper() == 'TL84':
                     self.__report.write_report(camera, 'WB', awb, 'TL84')
                     self.__report.write_report(camera, 'COLOR_ACCURACY', color_accuracy, 'TL84')
                     self.__report.write_report(camera, 'SATURATION', saturation, 'TL84')
-                if 'A' in file_name.upper():
+                elif file_name[0:1].upper() == 'A':
                     self.__report.write_report(camera, 'WB', awb, 'A')
                     self.__report.write_report(camera, 'SATURATION', saturation, 'A')
+                else:
+                    data = [file_name, awb, saturation, color_accuracy]
+                    self.__report.write_report(camera, 'FREE', data, free_index)
+                    free_index += 1
                 file = os.path.join(self.__source_dir, test_chart, 'roi_' + files_name[index])
                 cv.imwrite(file, roi_pick)
 

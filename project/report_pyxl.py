@@ -8,7 +8,8 @@
 
 import os
 import openpyxl
-from openpyxl.chart import Series, LineChart, ScatterChart, Reference
+from openpyxl.chart import Series, ScatterChart, Reference
+from openpyxl.styles import Color, Font, Alignment, Border, Side
 import gloabl_var as gl
 
 
@@ -19,6 +20,7 @@ class ReportUtil(object):
 
     def __init__(self):
         self.__wb = ''
+        self.__ws = ''
         self.__report_save_path = ''
         self.__report_demo_path = ''
 
@@ -85,6 +87,8 @@ class ReportUtil(object):
             self.write_saturation_data(camera, data, sub_item)
         elif 'WB' == test_item:
             self.write_wb_data(camera, data, sub_item)
+        elif 'FREE' == test_item:  # color checker free test
+            self.write_free_data(camera, data, sub_item)
         elif 'CORNER' == test_item:
             self.write_corner_data(camera, data)
         elif 'DR' == test_item:
@@ -321,6 +325,44 @@ class ReportUtil(object):
         for i in range(len(data)):
             cell = col + str(row + i)
             ws[cell] = data[i]
+
+    def write_free_data(self, camera, data, sub_item):
+        """
+
+        :param camera:
+        :param data:  [file_name, awb, saturation, color_accuracy]
+        :param sub_item: index
+        :return:
+        """
+        if 0 == sub_item:
+            self.__ws = self.__wb.create_sheet('Free ColorChecker', -1)
+            align = Alignment(horizontal='center', vertical='center')
+            font = Font(name=u'宋体', bold=True)
+            border = Border(left=Side(border_style='thin', color='000000'),
+                            right=Side(border_style='thin', color='000000'),
+                            top=Side(border_style='thin', color='000000'),
+                            bottom=Side(border_style='thin', color='000000'))
+            cells = ['A1', 'B1', 'F1', 'G1']
+            for cell in cells:
+                self.__ws[cell].font = font
+                self.__ws[cell].alignment = align
+                self.__ws[cell].border = border
+            self.__ws['A1'] = '文件名'
+            self.__ws.merge_cells('B1:E1')
+            self.__ws['B1'] = '白平衡（20-23）'
+            self.__ws['F1'] = '饱和度'
+            self.__ws.merge_cells('G1:AD1')
+            self.__ws['G1'] = '色彩还原'
+
+        if self.__ws == '':
+            return
+        row_start = 2
+        self.__ws.cell(row=sub_item+row_start, column=1).value = data[0]  # file name
+        for i in range(len(data[1])):
+            self.__ws.cell(row=sub_item + row_start, column=2+i).value = data[1][i]  # awb
+        self.__ws.cell(row=sub_item + row_start, column=6).value = str(round(data[2] * 100, 2)) + '%'  # saturation
+        for i in range(len(data[3])):
+            self.__ws.cell(row=sub_item + row_start, column=7 + i).value = data[3][i]  # color accuracy
 
     def write_corner_data(self, camera, data):
         """

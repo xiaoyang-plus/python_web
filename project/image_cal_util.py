@@ -20,19 +20,16 @@ def calculate_defect(image):
     """
 
     image_gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)  # np.ndarray BGR uint8
-
     screen_threshold = 0.2  # preliminarily screen for calculating
     standard_threshold = 0.3  # defect standard ratio
 
     min_val, max_val, min_idx, max_idx = cv.minMaxLoc(image_gray)
     # print(min_val, max_val, min_idx, max_idx)
     mean, std = cv.meanStdDev(image)
-    # print(mean[0], std[0])
     upper_limit = mean[0] + mean[0] * screen_threshold
     lower_limit = mean[0] - mean[0] * screen_threshold
 
-    print('upper_limit', upper_limit, 'lower_limit', lower_limit)
-
+    # print('upper_limit', upper_limit, 'lower_limit', lower_limit)
     window = 16  # standard window
     #  make border for  fast calculating
     image_border = cv.copyMakeBorder(image_gray, window, window, window, window, cv.BORDER_CONSTANT, value=mean[0])
@@ -49,9 +46,11 @@ def calculate_defect(image):
                 if image_gray[row, col] < standard_limit[0]:
                     black += 1
                     result[row, col] = 255
+                    # print('black ', 'defect limit:', standard_limit[0], 'x y=', col, row, 'value:', image_gray[row, col])
                 if image_gray[row, col] > standard_limit[1]:
                     hot += 1
                     result[row, col] = 255
+                    # print('Hot ', 'defect limit:', standard_limit[1], 'x y=', col, row, 'value:', image_gray[row, col])
 
     contours, hierarchy = cv.findContours(result, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     cv.drawContours(image, contours, -1, (0, 0, 255), 2)
@@ -62,7 +61,7 @@ def calculate_defect(image):
         if areas > 0:
             defects += 1
 
-    # print('hot:', hot, 'black:', black, 'defects:', defects)
+    print('hot:', hot, 'black:', black, 'defects:', defects)
     total_defect = hot + black
 
     return [image, total_defect, defects]

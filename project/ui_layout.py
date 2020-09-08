@@ -16,6 +16,7 @@ from os.path import isfile, join
 
 import gloabl_var as gl
 from my_label import MyLabel
+from my_widget import MyWidget
 from process_thread import ClassifyThread, AnalyzeThread
 from common import check_dir
 import source_rc
@@ -34,13 +35,17 @@ class Ui_zhu(object):
         self.analyze_thread.done_sig.connect(self.show_done_state)
         self.analyze_thread.err_sig.connect(self.show_analyze_info)
         self.analyze_thread.all_done.connect(self.show_all_done)
+        self.icon = QtGui.QIcon()
 
     def setupUi(self, zhu):
         zhu.setObjectName("zhu")
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)  # 去掉标题栏
+        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)  # 去掉标题栏
         self.setWindowOpacity(1)  # 设置窗口透明度
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)  # 设置窗口背景透明
-        # self.setWindowFlag(QtCore.Qt.FramelessWindowHint)  # 隐藏边框
+        self.setWindowFlag(QtCore.Qt.FramelessWindowHint)  # 隐藏边框
+
+        self.icon.addPixmap(QtGui.QPixmap("./image/oppo_analyzer.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.setWindowIcon(self.icon)
         zhu.resize(1200, 700)
         self.stackedWidget = QtWidgets.QStackedWidget(zhu)
         self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 1200, 701))
@@ -52,13 +57,10 @@ class Ui_zhu(object):
         self.label_SYBJ.setStyleSheet("border-image: url(:/new/prefix1/image/zhu.png);")
         self.label_SYBJ.setObjectName("label_SYBJ")
 
-
         self.pushButton_SYGO = QtWidgets.QPushButton(self.souye)
         self.pushButton_SYGO.setGeometry(QtCore.QRect(505, 276, 184, 184))
         self.pushButton_SYGO.setStyleSheet("background-color: rgba(0, 85, 255, 0);border-radius:80px;")
         self.pushButton_SYGO.setObjectName("pushButton_SYGO")
-
-
 
         self.pushButton_SYDX = QtWidgets.QPushButton(self.souye)
         self.pushButton_SYDX.setGeometry(QtCore.QRect(560, 660, 75, 23))
@@ -137,6 +139,7 @@ class Ui_zhu(object):
                                             "")
         self.pushButton_SYZXH.setText("")
         self.pushButton_SYZXH.setObjectName("pushButton_SYZXH")
+        self.pushButton_SYZXH.clicked.connect(self.aa_pushButton_ZXH)
 
         self.pushButton_SYQP = QtWidgets.QPushButton(self.souye)
         self.pushButton_SYQP.setGeometry(QtCore.QRect(1130, 10, 20, 20))
@@ -303,11 +306,11 @@ class Ui_zhu(object):
         self.gif = QMovie('.\image\GIF\AI按键_3.gif')
         self.label_2.setMovie(self.gif)
         self.gif.start()
-
-
-
-
         self.stackedWidget.addWidget(self.souye)
+
+        # self.hahah = MyWidget()
+        # self.stackedWidget.addWidget(self.hahah)
+
         self.xiangxi = QtWidgets.QWidget()
         self.xiangxi.setObjectName("xiangxi")
         self.label_bjxx = QtWidgets.QLabel(self.xiangxi)
@@ -383,9 +386,6 @@ class Ui_zhu(object):
                                              "font: 10pt \"黑体\";")
         self.ColorChecker_name.setAlignment(QtCore.Qt.AlignCenter)
         self.ColorChecker_name.setObjectName("ColorChecker_name")
-
-
-
 
 
         self.OECF_figure = MyLabel(self.scrollAreaWidgetContents)
@@ -2071,17 +2071,17 @@ class Ui_zhu(object):
         if self.pushButton_11.pos() == QtCore.QPoint(440, 450):
             return
         self.listView_Anim = QPropertyAnimation(self.label_3, b"geometry")
-        self.listView_Anim.setDuration(450)  # 设定动画时间
+        self.listView_Anim.setDuration(400)  # 设定动画时间
         self.listView_Anim.setStartValue(QRect(270, 70, 643, 0))  # 设置起始大小
         self.listView_Anim.setEndValue(QRect(270, 70, 643, 411))  # 设置终止大小
 
         self.listView_Anim1 = QPropertyAnimation(self.pushButton_11, b"geometry")
-        self.listView_Anim1.setDuration(450)  # 设定动画时间
+        self.listView_Anim1.setDuration(400)  # 设定动画时间
         self.listView_Anim1.setStartValue(QRect(440, 70, 300, 0))  # 设置起始大小
         self.listView_Anim1.setEndValue(QRect(440, 450, 300, 30))  # 设置终止大小
 
         self.listView_Anim2 = QPropertyAnimation(self.pushButton_12, b"geometry")
-        self.listView_Anim2.setDuration(450)  # 设定动画时间
+        self.listView_Anim2.setDuration(400)  # 设定动画时间
         self.listView_Anim2.setStartValue(QRect(0, 70, 0, 0))  # 设置起始大小
         self.listView_Anim2.setEndValue(QRect(0, 70, 1201, 581))  # 设置终止大小
 
@@ -2095,17 +2095,17 @@ class Ui_zhu(object):
         :return:
         """
         self.listView_Anim = QPropertyAnimation(self.label_3, b"geometry")
-        self.listView_Anim.setDuration(250)  # 设定动画时间
+        self.listView_Anim.setDuration(300)  # 设定动画时间
         self.listView_Anim.setStartValue(QRect(270, 70, 643, 411))  # 设置起始大小
         self.listView_Anim.setEndValue(QRect(270, 70, 643, 0))  # 设置终止大小
 
         self.listView_Anim1 = QPropertyAnimation(self.pushButton_11, b"geometry")
-        self.listView_Anim1.setDuration(250)  # 设定动画时间
+        self.listView_Anim1.setDuration(300)  # 设定动画时间
         self.listView_Anim1.setStartValue(QRect(440, 450, 300, 30))  # 设置起始大小
         self.listView_Anim1.setEndValue(QRect(440, 70, 300, 0))  # 设置终止大小
 
         self.listView_Anim2 = QPropertyAnimation(self.pushButton_12, b"geometry")
-        self.listView_Anim2.setDuration(250)  # 设定动画时间
+        self.listView_Anim2.setDuration(300)  # 设定动画时间
         self.listView_Anim2.setStartValue(QRect(0, 70, 1201, 581))  # 设置起始大小
         self.listView_Anim2.setEndValue(QRect(0, 70, 1201, 0))  # 设置终止大小
         self.listView_Anim.start()  # 动画开始
@@ -2131,6 +2131,8 @@ class Ui_zhu(object):
         """
             最小化窗口
             """
+
+        # self.stackedWidget.setCurrentIndex(1)
         self.showMinimized()
 
     def mousePressEvent(self, event):
