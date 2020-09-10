@@ -9,6 +9,7 @@
 import os
 import shutil
 import cv2 as cv
+import numpy as np
 import gloabl_var as gl
 
 def get_path_filename_suffix(file):
@@ -38,7 +39,8 @@ def get_images_filenames(source_dir, chart_folder):
     for file in files:
         file_path = os.path.join(path, file)
         if os.path.isfile(file_path):
-            tmp_image = cv.imread(file_path)
+            # tmp_image = cv.imread(file_path)
+            tmp_image = image_read(file_path)
             images.append(tmp_image)
             files_name.append(file)
 
@@ -153,3 +155,24 @@ def check_dir(path):
             dir_state[folder] = 0
     gl.set_value('dir_state', dir_state)
     return dir_state
+
+
+def image_read(file_path):
+    """support chinese path
+
+    :param file_path:
+    :return: cv_img
+    """
+    cv_img = cv.imdecode(np.fromfile(file_path, dtype=np.uint8), -1)
+    return cv_img
+
+
+def image_write(file, src):
+    """support chinese path
+
+    :param file:
+    :param src:
+    :return:
+    """
+    cv.imencode('.jpg', src)[1].tofile(file)
+

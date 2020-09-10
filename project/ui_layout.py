@@ -39,7 +39,6 @@ class Ui_zhu(object):
 
     def setupUi(self, zhu):
         zhu.setObjectName("zhu")
-        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)  # 去掉标题栏
         self.setWindowOpacity(1)  # 设置窗口透明度
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)  # 设置窗口背景透明
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)  # 隐藏边框
@@ -2132,7 +2131,6 @@ class Ui_zhu(object):
             最小化窗口
             """
 
-        # self.stackedWidget.setCurrentIndex(1)
         self.showMinimized()
 
     def mousePressEvent(self, event):

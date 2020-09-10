@@ -17,7 +17,7 @@ from common import get_images_filenames
 import gloabl_var as gl
 
 
-class AnalyzerManager():
+class AnalyzerManager:
     """
 
     """

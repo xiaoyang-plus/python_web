@@ -113,8 +113,6 @@ def img_resize_2grey(file_path, resize_width, resize_height):
         img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # 转换成灰度图
     except cv2.error:  # 如果是单通道
         img_grey = img
-    # cv2.imshow('img_process', img_grey)
-    # cv2.waitKey(0)
     return img_grey
 
 
@@ -182,10 +180,3 @@ def dump_model(clf, model_path):
 
 def load_model(model_path):
     return joblib.load(model_path)
-
-# if __name__ == '__main__':
-#     # 用于函数测试
-#     img_path = open_files()
-#     image = read_img(img_path)
-#     hist = cv2.calcHist([image], [0, 1], None, [256, 256], [0.0, 255.0, 0.0, 255.0])
-#     X = ((hist / 255).flatten())

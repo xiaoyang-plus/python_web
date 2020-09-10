@@ -16,12 +16,11 @@ import shutil
 import cv2 as cv
 import classify_util as ft
 from common import get_path_filename_suffix
+from common import image_write
 
 import warnings
 
 warnings.filterwarnings('ignore')
-
-
 
 
 def classify_image(file_list):
@@ -60,7 +59,7 @@ def classify_image(file_list):
             thumb_dir = os.path.join(dst_directory, '.thumb')
             filename = os.path.basename(file)  # filename = file_name + suffix
             thumb_file = os.path.join(thumb_dir, filename)
-            cv.imwrite(thumb_file, thumb_image)
+            image_write(thumb_file, thumb_image)
             screen_files.remove(file)
 
         # video file classify
@@ -98,7 +97,7 @@ def classify_image(file_list):
             thumb_dir = os.path.join(dst_directory, '.thumb')
             filename = os.path.basename(video_file[i])
             file = os.path.join(thumb_dir, filename + '.jpg')  # xxx.mp4.jpg
-            cv.imwrite(file, video_thumb[i])
+            image_write(file, video_thumb[i])
 
     # To do picture classify
     if len(screen_files) > 0:
@@ -122,4 +121,4 @@ def classify_image(file_list):
             thumb_dir = os.path.join(dst_directory, '.thumb')
             filename = os.path.basename(screen_files[i])
             file = os.path.join(thumb_dir, filename)
-            cv.imwrite(file, thumb_images[i])
+            image_write(file, thumb_images[i])
