@@ -274,9 +274,17 @@ class ReportUtil(object):
         row = 19
         col = 'E'  # Front camera
         if 'main' == camera:
-            col = 'G'
-        if 'TL84' == sub_item:
+            col = 'H'
+
+        if 'D65' == sub_item:
+            pass
+        elif 'TL84' == sub_item:
             col = chr(ord(col) + 1)
+        elif 'A' == sub_item:
+            col = chr(ord(col) + 2)
+        else:
+            return
+
         for i in range(len(data)):
             cell = col + str(row + i)
             ws[cell] = data[i]
@@ -293,12 +301,20 @@ class ReportUtil(object):
         row = 54  # front camera
         if 'main' == camera:
             row = 55
+
         if 'D65' == sub_item:
             col = 'F'
         elif 'TL84' == sub_item:
             col = 'G'
-        elif 'A' == sub_item:
+        elif 'CWF' == sub_item:
             col = 'H'
+        elif 'A' == sub_item:
+            col = 'I'
+        elif 'H' == sub_item:
+            col = 'J'
+        else:
+            return
+
         cell = col + str(row)
         ws[cell] = data
 
@@ -314,13 +330,17 @@ class ReportUtil(object):
         col = 'F'  # front camera
         if 'main' == camera:
             col = 'J'
-        row = 0
+
         if 'D65' == sub_item:
             row = 15
         elif 'TL84' == sub_item:
             row = 19
-        elif 'A' == sub_item:
+        elif 'CWF' == sub_item:
             row = 23
+        elif 'A' == sub_item:
+            row = 27
+        else:
+            return
 
         for i in range(len(data)):
             cell = col + str(row + i)

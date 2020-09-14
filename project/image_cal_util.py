@@ -214,6 +214,9 @@ def get_target_oecf_chart(image):
     col_begin = round(size[1] * 0.05)
     col_end = round(size[1] * 0.1)
 
+    if image.shape[2] == 1:
+        return 0
+
     r = np.mean(image[row_begin:row_end, col_begin:col_end, 2])
     g = np.mean(image[row_begin:row_end, col_begin:col_end, 1])
     b = np.mean(image[row_begin:row_end, col_begin:col_end, 0])

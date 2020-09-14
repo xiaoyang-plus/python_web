@@ -1363,6 +1363,7 @@ class Ui_zhu(object):
                                             "")
         self.pushButton_XXZXH.setText("")
         self.pushButton_XXZXH.setObjectName("pushButton_XXZXH")
+        self.pushButton_XXZXH.clicked.connect(self.aa_pushButton_ZXH)
 
         self.Start_the_GIF = QtWidgets.QLabel(self.xiangxi)
         self.Start_the_GIF.setGeometry(QtCore.QRect(0, 0, 0, 0))
@@ -1635,6 +1636,8 @@ class Ui_zhu(object):
                                             "")
         self.pushButton_XSZXH.setText("")
         self.pushButton_XSZXH.setObjectName("pushButton_XSZXH")
+        self.pushButton_XSZXH.clicked.connect(self.aa_pushButton_ZXH)
+
         self.ColorChecker_GIF = QtWidgets.QLabel(self.xianshi)
         self.ColorChecker_GIF.setGeometry(QtCore.QRect(165, 160, 90, 90))
         self.ColorChecker_GIF.setStyleSheet("")
@@ -1870,6 +1873,7 @@ class Ui_zhu(object):
                                             "")
         self.pushButton_QTZXH.setText("")
         self.pushButton_QTZXH.setObjectName("pushButton_QTZXH")
+        self.pushButton_QTZXH.clicked.connect(self.aa_pushButton_ZXH)
         self.stackedWidget.addWidget(self.qita)
 
         self.retranslateUi(zhu)
@@ -2130,7 +2134,6 @@ class Ui_zhu(object):
         """
             最小化窗口
             """
-
         self.showMinimized()
 
     def mousePressEvent(self, event):
