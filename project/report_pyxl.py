@@ -90,7 +90,7 @@ class ReportUtil(object):
         elif 'FREE' == test_item:  # color checker free test
             self.write_free_data(camera, data, sub_item)
         elif 'CORNER' == test_item:
-            self.write_corner_data(camera, data)
+            self.write_corner_data(camera, data, sub_item)
         elif 'DR' == test_item:
             self.write_dr_data(camera, data)
 
@@ -384,18 +384,36 @@ class ReportUtil(object):
         for i in range(len(data[3])):
             self.__ws.cell(row=sub_item + row_start, column=7 + i).value = data[3][i]  # color accuracy
 
-    def write_corner_data(self, camera, data):
+    def write_corner_data(self, camera, data, sub_item):
         """
 
         :param camera:
-        :param data:
+        :param data: [module, light condition, max value]
+        :param sub_item: corner module index
         :return:
         """
         ws = self.__wb.get_sheet_by_name('白平衡')
-        if 'front' == camera:
-            ws['D51'] = data[0]  # 50hz 800lux
-        else:  # for main camera
-            ws['G51'] = data[0]  # 50hz 800lux
+
+        row = 37 + sub_item * 4
+        cell_module = 'C' + str(row)
+        col = 'F'  # Front camera
+        if 'main' == camera:
+            col = 'J'
+
+        if 'D65' == data[1]:
+            row += 0
+        elif 'TL84' == data[1]:
+            row += 1
+        elif 'CWF' == data[1]:
+            row += 2
+        elif 'A' == data[1]:
+            row += 3
+        else:
+            return
+
+        cell = col + str(row)
+        ws[cell] = data[2]
+        ws[cell_module] = data[0]
 
     def write_dr_data(self, camera, data):
         """

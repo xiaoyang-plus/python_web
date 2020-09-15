@@ -127,26 +127,18 @@ class AnalyzerManager:
 
         if test_chart == 'ColorChecker':
             free_index = 0
+            corner_index = -1
+            module = ''
             condition_list = ['D65', 'TL84', 'CWF', 'A', 'H']
             for index, file_name in enumerate(files_name):
                 roi_pick, awb, color_accuracy, saturation = icm.get_awb_accuracy_saturation(images[index])
-                # if 'D65' in file_name.upper():
-                # if file_name[0:3].upper() == 'D65':
-                #     self.__report.write_report(camera, 'WB', awb, 'D65')
-                #     self.__report.write_report(camera, 'COLOR_ACCURACY', color_accuracy, 'D65')
-                #     self.__report.write_report(camera, 'SATURATION', saturation, 'D65')
-                # elif file_name[0:4].upper() == 'TL84':
-                #     self.__report.write_report(camera, 'WB', awb, 'TL84')
-                #     self.__report.write_report(camera, 'COLOR_ACCURACY', color_accuracy, 'TL84')
-                #     self.__report.write_report(camera, 'SATURATION', saturation, 'TL84')
-                # elif file_name[0:1].upper() == 'A':
-                #     self.__report.write_report(camera, 'WB', awb, 'A')
-                #     self.__report.write_report(camera, 'SATURATION', saturation, 'A')
-                # else:
-                #     data = [file_name, awb, saturation, color_accuracy]
-                #     self.__report.write_report(camera, 'FREE', data, free_index)
-                #     free_index += 1
-                if file_name.split('.')[0].upper() in condition_list:
+                if file_name.split('#')[0]:  # corner module
+                    if module != file_name.split('#')[0]:
+                        module = file_name.split('#')[0]
+                        corner_index += 1
+                    data = [module, file_name.split('#')[1].split('.')[0].upper(), max(awb)]
+                    self.__report.write_report(camera, 'CORNER', data, corner_index)
+                elif file_name.split('.')[0].upper() in condition_list:
                     self.__report.write_report(camera, 'WB', awb, file_name.split('.')[0].upper())
                     self.__report.write_report(camera, 'COLOR_ACCURACY', color_accuracy, file_name.split('.')[0].upper())
                     self.__report.write_report(camera, 'SATURATION', saturation, file_name.split('.')[0].upper())
