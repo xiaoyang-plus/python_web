@@ -132,7 +132,8 @@ class AnalyzerManager:
             condition_list = ['D65', 'TL84', 'CWF', 'A', 'H']
             for index, file_name in enumerate(files_name):
                 roi_pick, awb, color_accuracy, saturation = icm.get_awb_accuracy_saturation(images[index])
-                if file_name.split('#')[0]:  # corner module
+                if '#' in file_name:  # corner module
+                    print(file_name.split('#')[0])
                     if module != file_name.split('#')[0]:
                         module = file_name.split('#')[0]
                         corner_index += 1

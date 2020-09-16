@@ -13,7 +13,7 @@ import copy
 
 
 def calculate_defect(image):
-    """
+    """calculate defect
 
     :param image:  input rgb image
     :return: [hintImage, total defects, defects num]
@@ -23,13 +23,10 @@ def calculate_defect(image):
     screen_threshold = 0.2  # preliminarily screen for calculating
     standard_threshold = 0.3  # defect standard ratio
 
-    min_val, max_val, min_idx, max_idx = cv.minMaxLoc(image_gray)
-    # print(min_val, max_val, min_idx, max_idx)
     mean, std = cv.meanStdDev(image)
     upper_limit = mean[0] + mean[0] * screen_threshold
     lower_limit = mean[0] - mean[0] * screen_threshold
 
-    # print('upper_limit', upper_limit, 'lower_limit', lower_limit)
     window = 16  # standard window
     #  make border for  fast calculating
     image_border = cv.copyMakeBorder(image_gray, window, window, window, window, cv.BORDER_CONSTANT, value=mean[0])
@@ -46,11 +43,9 @@ def calculate_defect(image):
                 if image_gray[row, col] < standard_limit[0]:
                     black += 1
                     result[row, col] = 255
-                    # print('black ', 'defect limit:', standard_limit[0], 'x y=', col, row, 'value:', image_gray[row, col])
                 if image_gray[row, col] > standard_limit[1]:
                     hot += 1
                     result[row, col] = 255
-                    # print('Hot ', 'defect limit:', standard_limit[1], 'x y=', col, row, 'value:', image_gray[row, col])
 
     contours, hierarchy = cv.findContours(result, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     cv.drawContours(image, contours, -1, (0, 0, 255), 2)
@@ -149,9 +144,9 @@ def pre_calculate_shading(image):
 
 
 def calculate_luma_shading(image):
-    """
+    """calculate luma shading
 
-    :param image:
+    :param image: source image
     :return:[UL, LL, UR, LR]
     """
 
@@ -166,15 +161,9 @@ def calculate_luma_shading(image):
     r9, g9, b9 = pre_calculate_shading(image)
 
     k1 = (0.3 * r1 + 0.59 * g1 + 0.11 * b1) / (0.3 * r5 + 0.59 * g5 + 0.11 * b5)
-    k2 = (0.3 * r2 + 0.59 * g2 + 0.11 * b2) / (0.3 * r5 + 0.59 * g5 + 0.11 * b5)
     k3 = (0.3 * r3 + 0.59 * g3 + 0.11 * b3) / (0.3 * r5 + 0.59 * g5 + 0.11 * b5)
-    k4 = (0.3 * r4 + 0.59 * g4 + 0.11 * b4) / (0.3 * r5 + 0.59 * g5 + 0.11 * b5)
-    k6 = (0.3 * r6 + 0.59 * g6 + 0.11 * b6) / (0.3 * r5 + 0.59 * g5 + 0.11 * b5)
     k7 = (0.3 * r7 + 0.59 * g7 + 0.11 * b7) / (0.3 * r5 + 0.59 * g5 + 0.11 * b5)
-    k8 = (0.3 * r8 + 0.59 * g8 + 0.11 * b8) / (0.3 * r5 + 0.59 * g5 + 0.11 * b5)
     k9 = (0.3 * r9 + 0.59 * g9 + 0.11 * b9) / (0.3 * r5 + 0.59 * g5 + 0.11 * b5)
-    k5 = (k1 + k3 + k7 + k9) / 4
-    k52 = (k1 + k2 + k3 + k4 + k6 + k7 + k8 + k9) / 8
 
     return [round(k1, 4), round(k3, 4), round(k7, 4), round(k9, 4)]
 
@@ -241,7 +230,6 @@ def get_color_checker_pos(image):
     img_gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)  # 转换成灰度图
     img_median = cv.medianBlur(img_gray, 5)  # 中值滤波去噪
     ret1, thresh1 = cv.threshold(img_median, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-
     canny_edges = cv.Canny(thresh1, 200, 400)
     contours, hierarchy = cv.findContours(canny_edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
@@ -381,7 +369,7 @@ def get_awb_accuracy_saturation(image):
         stad_b = stand_b[i]
         meas_ab.append(math.sqrt(math.pow(meas_a, 2) + math.pow(meas_b, 2)))
         stad_ab.append(math.sqrt(math.pow(stad_a, 2) + math.pow(stad_b, 2)))
-
     saturation = np.mean(meas_ab) / np.mean(stad_ab)
+
     return roi_pick, awb_list, color_accuracy_list, saturation
 
