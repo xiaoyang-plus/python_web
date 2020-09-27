@@ -10,7 +10,11 @@ import os
 import shutil
 import cv2 as cv
 import numpy as np
+import wmi
+import string
+import random
 import gloabl_var as gl
+
 
 def get_path_filename_suffix(file):
     """
@@ -138,6 +142,7 @@ def move_file(path_list):
     win = gl.get_value('win')
     win.update_thumb(path_list[0:2])
 
+
 def check_dir(path):
     """
 
@@ -176,3 +181,76 @@ def image_write(file, src):
     """
     cv.imencode('.jpg', src)[1].tofile(file)
 
+
+def get_board_serial():
+    """
+
+    :return:
+    """
+    # c = wmi.WMI()
+    # board_serial = c.Win32_BaseBoard()[0].SerialNumber
+
+    # computer_info = c.Win32_ComputerSystem()[0]
+    # board_serial = computer_info.Model
+
+    c = wmi.WMI()
+    cpu_info = c.Win32_Processor()[0].ProcessorID.strip()
+
+    return cpu_info
+
+
+def verification_encode(code):
+    """
+
+    :param code:
+    :return:
+    """
+    str = (string.ascii_letters + string.digits) * 20
+    encode_serial = ''
+
+    for index, ch in enumerate(code):
+        tmp_ch = random.sample(str, 20)
+        for i in range(len(tmp_ch)):
+            encode_serial += tmp_ch[i]
+        encode_serial += ch
+        tmp_ch = random.sample(str, pow(index, 2))
+        for i in range(len(tmp_ch)):
+            encode_serial += tmp_ch[i]
+
+    f1 = open('D:/permission.txt', 'w')
+    f1.write(encode_serial)
+    f1.close()
+    return encode_serial
+
+
+def verification_decode(code):
+    """
+
+    :param code:
+    :return:
+    """
+    decode = ''
+    cnt = len(code)
+    gap = 20
+    index = gap
+    num = 0
+    while index < cnt:
+        decode += code[index]
+        index += (gap + pow(num, 2)) + 1
+        num += 1
+
+    return decode
+
+
+def check_verification_code(code):
+    """
+
+    :param code:
+    :return: 1 or 0
+    """
+    board_serial = get_board_serial()
+
+    if verification_decode(code) == board_serial:
+        return 1
+    else:
+        return 0
