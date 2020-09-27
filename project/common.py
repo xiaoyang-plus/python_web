@@ -199,6 +199,16 @@ def get_board_serial():
     return cpu_info
 
 
+def get_mac_addr():
+    """
+
+    :return:
+    """
+    c = wmi.WMI()
+    mac = c.Win32_NetworkAdapterConfiguration(IPEnabled=1)[0]
+    addr = mac.MACAddress.replace(':', '0')
+    return addr
+
 def verification_encode(code):
     """
 
@@ -213,7 +223,7 @@ def verification_encode(code):
         for i in range(len(tmp_ch)):
             encode_serial += tmp_ch[i]
         encode_serial += ch
-        tmp_ch = random.sample(str, pow(index, 2))
+        tmp_ch = random.sample(str, index * 3 + 1)
         for i in range(len(tmp_ch)):
             encode_serial += tmp_ch[i]
 
@@ -236,7 +246,7 @@ def verification_decode(code):
     num = 0
     while index < cnt:
         decode += code[index]
-        index += (gap + pow(num, 2)) + 1
+        index += (gap + num * 3 + 1) + 1
         num += 1
 
     return decode
@@ -248,9 +258,9 @@ def check_verification_code(code):
     :param code:
     :return: 1 or 0
     """
-    board_serial = get_board_serial()
+    mac_addr = get_mac_addr()
 
-    if verification_decode(code) == board_serial:
+    if verification_decode(code) == mac_addr:
         return 1
     else:
         return 0

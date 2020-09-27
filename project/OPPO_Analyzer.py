@@ -9,7 +9,7 @@ from tkinter.messagebox import *
 from ui_layout import Ui_zhu
 import gloabl_var as gl
 from common import check_verification_code
-from common import  get_board_serial
+from common import get_mac_addr
 
 
 # Widget界面时 ->（QWidget,UI_Form）,QDialog-->(QDialog, Ui_Dialog)，MainWindow类似
@@ -39,7 +39,7 @@ def check_permission():
         else:
             return 1
     except:
-        board_serial = get_board_serial()
+        board_serial = get_mac_addr()
         if len(board_serial) == 0:
             board_serial = 'get serial failed'
         f = open('serial.txt', 'w', encoding='utf-8')
